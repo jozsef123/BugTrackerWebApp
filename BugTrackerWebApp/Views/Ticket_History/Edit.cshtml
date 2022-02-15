@@ -1,0 +1,59 @@
+﻿@model BugTrackerWebApp.Models.Ticket_History
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Ticket_History</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="TicketId" class="control-label"></label>
+                <input asp-for="TicketId" class="form-control" />
+                <span asp-validation-for="TicketId" class="text-danger"></span>
+            </div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="AssignedDeveloperUserName" class="control-label"></label>
+                <input asp-for="AssignedDeveloperUserName" class="form-control" />
+                <span asp-validation-for="AssignedDeveloperUserName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="OldValueUserName" class="control-label"></label>
+                <input asp-for="OldValueUserName" class="form-control" />
+                <span asp-validation-for="OldValueUserName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NewValueUserName" class="control-label"></label>
+                <input asp-for="NewValueUserName" class="form-control" />
+                <span asp-validation-for="NewValueUserName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Date_Changed" class="control-label"></label>
+                <input asp-for="Date_Changed" class="form-control" />
+                <span asp-validation-for="Date_Changed" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TicketUpdaterUserName" class="control-label"></label>
+                <input asp-for="TicketUpdaterUserName" class="form-control" />
+                <span asp-validation-for="TicketUpdaterUserName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

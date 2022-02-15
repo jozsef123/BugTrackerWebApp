@@ -1,0 +1,133 @@
+﻿@model BugTrackerWebApp.Models.Ticket
+
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Ticket</h4>
+    <a asp-controller = "Comments" asp-action="Create">Create a comment for ticket</a>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            Project Name
+        </dt>
+        <dd class = "col-sm-10">
+            @*@Html.DisplayFor(model => model.Project.Name)*@
+            @ViewBag.projectName
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+   
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class = "col-sm-2">
+            @*@Html.DisplayNameFor(model => model.SubmitterId)*@
+            Submitter 
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.SubmitterUserName)
+        </dd>
+        <dt class = "col-sm-2">
+            @*@Html.DisplayNameFor(model => model.AssignedDeveloperUserName)*@
+            Assigned Developer
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AssignedDeveloperUserName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Priority)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Priority)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Type)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Type)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Status)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Status)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Date_Created)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Date_Created)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Date_Updated)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Date_Updated)
+        </dd>
+    </dl>
+</div>
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @*@Html.DisplayNameFor(model => model.SubmitterUserName)*@
+                    Submitter
+                </th>
+                <th>
+                    @*@Html.DisplayNameFor(model => model.Comments.Message)*@
+                    Message
+                </th>
+                <th>
+                   @* @Html.DisplayNameFor(model => model.Date_Created)*@
+                    Date Created
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.Comments) {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Ticket.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SubmitterUserName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Message)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Date_Created)
+                    </td>
+                    <td>
+                        <a asp-controller = "Comments" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-controller = "Comments" asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-controller = "Comments" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+        }
+       </tbody>
+    </table>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to Tickets List</a> |
+    <a asp-controller = "Projects" asp-action="Details" asp-route-id="@Model.ProjectId">Back to Project details</a> 
+  
+</div>
