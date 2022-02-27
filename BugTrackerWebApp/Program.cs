@@ -29,7 +29,7 @@ namespace BugTrackerWebApp
 
                 var adminRole = new IdentityRole("Admin");
                 adminRole.Id = "a";
-                var projectManagerRole = new IdentityRole("ProjectManager");
+                var projectManagerRole = new IdentityRole("Project Manager");
                 projectManagerRole.Id = "b";
                 var developerRole = new IdentityRole("Developer");
                 developerRole.Id = "c";

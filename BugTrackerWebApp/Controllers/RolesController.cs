@@ -39,13 +39,13 @@ namespace BugTrackerWebApp.Controllers
                     .Where(y => userRoles.Any(z => z.UserId == x.Id && z.RoleId == y.Id))
                     .Select(y => new UsersRole
                     {
-                        Name = y.NormalizedName
+                        Name = y.Name
                     })
             });
 
             return View(new DisplayViewModel
             {
-                Roles = roles.Select(x => x.NormalizedName),
+                Roles = roles.Select(x => x.Name),
                 Users = convertedUsers
             });
         }

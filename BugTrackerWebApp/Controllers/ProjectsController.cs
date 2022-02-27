@@ -59,8 +59,8 @@ namespace BugTrackerWebApp.Controllers
             }
 
             var project = await _context.Project
-                .Include(p => p.Tickets) // added
-                .AsNoTracking()          //added
+                .Include(p => p.Tickets)
+                .AsNoTracking()          
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (project == null)
@@ -69,6 +69,8 @@ namespace BugTrackerWebApp.Controllers
             }
             TempData["projectName"] = project.Name;
             TempData["projectId"] = project.Id;
+
+            TempData["showDropDown"] = false;                       // if user creates a new ticket, show Project Name
 
             return View(project);
         }

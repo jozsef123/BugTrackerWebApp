@@ -119,8 +119,6 @@ namespace BugTrackerWebApp.Controllers
 
 
             ViewBag.projectName = listData[0].projectName;
-            //ViewBag.ticketName = listData[0].ticketName;
-            //ViewBag.ticketId = listData[0].ticketId;
             TempData["ticketName"] = listData[0].ticketName;
             TempData["ticketId"] = listData[0].ticketId;
             ViewBag.ticketHistory = ticketHistory;
@@ -129,7 +127,6 @@ namespace BugTrackerWebApp.Controllers
                .Include(t => t.Comments)
                .AsNoTracking()
                .FirstOrDefaultAsync(m => m.Id == id);
-
 
             if (query == null)
             {
@@ -144,19 +141,18 @@ namespace BugTrackerWebApp.Controllers
         {
             ViewBag.Users = new SelectList(_context.Users, "UserName");
             ViewBag.Projects = new SelectList(_context.Project, "Id", "Name");
-            if (TempData["projectId"] != null)
+            if ((bool)TempData["showDropDown"] == false)
             {
                 string name = (string)TempData["projectName"];
                 int projectId = (int)TempData["projectId"];
                 ViewBag.projectName = name;
                 ViewBag.projectId = projectId;
-                ViewBag.showDropDown = false;
                 TempData["projectName"] = name;
                 TempData["projectId"] = projectId;
             }
             else
             {
-                ViewBag.showDropDown = true;
+                TempData["showDropDown"] = true;
             }
 
             return View();
