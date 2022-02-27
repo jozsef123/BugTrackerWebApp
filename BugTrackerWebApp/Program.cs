@@ -28,9 +28,13 @@ namespace BugTrackerWebApp
                 dbContext.Database.Migrate();
 
                 var adminRole = new IdentityRole("Admin");
+                adminRole.Id = "a";
                 var projectManagerRole = new IdentityRole("ProjectManager");
+                projectManagerRole.Id = "b";
                 var developerRole = new IdentityRole("Developer");
+                developerRole.Id = "c";
                 var submitterRole = new IdentityRole("Submitter");
+                submitterRole.Id = "d";
 
                 if (!dbContext.Roles.Any())
                 {
@@ -41,7 +45,7 @@ namespace BugTrackerWebApp
                     
                 }
 
-                if (!dbContext.Users.Any(u => u.UserName == "admin"))
+                if (!dbContext.Users.Any(u => u.UserName == "Admin"))
                 {
                     var adminUser = new IdentityUser
                     {

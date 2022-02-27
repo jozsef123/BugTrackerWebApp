@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BugTrackerWebApp.Data;
+using BugTrackerWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BugTrackerWebApp.Data;
-using BugTrackerWebApp.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
+using PagedList;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BugTrackerWebApp.Controllers
 {
@@ -24,12 +22,62 @@ namespace BugTrackerWebApp.Controllers
         }
 
         // GET: Tickets
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
         {
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["StatusSortParm"] = sortOrder == "Status" ? "closed" : "Status";
+            ViewData["DateCreatedSortParm"] = sortOrder == "DateCreated" ? "dateCreated_desc" : "DateCreated";
+            ViewData["DateUpdatedSortParm"] = sortOrder == "DateUpdated" ? "dateUpdated_desc" : "DateUpdated";
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewData["CurrentFilter"] = searchString;
+
             var tickets = _context.Ticket
                 .Include(t => t.Project)
                 .AsNoTracking();
-            return View(await tickets.ToListAsync());
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                tickets = tickets.Where(t => t.Name.Contains(searchString) 
+                                     || t.Project.Name.Contains(searchString)
+                                     || t.Description.Contains(searchString)
+                                     || t.SubmitterUserName.Contains(searchString)
+                                     || t.AssignedDeveloperUserName.Contains(searchString));
+            }
+            switch (sortOrder)
+            {
+                case "Status":
+                    tickets = tickets.OrderBy(s => s.Status);
+                    break;
+                case "closed":
+                    tickets = tickets.OrderByDescending(s => s.Status);
+                    break;
+                case "DateCreated":
+                    tickets = tickets.OrderBy(s => s.Date_Created);
+                    break;
+                case "dateCreated_desc":
+                    tickets = tickets.OrderByDescending(s=>s.Date_Created);
+                    break;
+                case "DateUpdated":
+                    tickets = tickets.OrderBy(s => s.Date_Updated);
+                    break;
+                case "dateUpdated_desc":
+                    tickets = tickets.OrderByDescending(s => s.Date_Updated);
+                    break;
+                default:
+                    break;
+            }
+            int pageSize = 5;
+            return View(await PaginatedList<Ticket>.CreateAsync(tickets.AsNoTracking(), pageNumber ?? 1, pageSize));
+            //return View(await tickets.ToListAsync());
         }
 
         // GET: Tickets/Details/5
@@ -55,12 +103,27 @@ namespace BugTrackerWebApp.Controllers
                                }
                                ).ToList();
 
+            // get the ticket history for the ticket
+
+            var ticketHistory = from th in _context.Ticket_History
+                                join t in _context.Ticket
+                                on th.TicketId equals t.Id
+                                where th.TicketId == id
+                                select new Ticket_History
+                                {
+                                    OldValueUserName = th.OldValueUserName,
+                                    NewValueUserName = th.NewValueUserName,
+                                    Date_Changed = th.Date_Changed,
+                                    TicketUpdaterUserName = th.TicketUpdaterUserName
+                                };
+
 
             ViewBag.projectName = listData[0].projectName;
             //ViewBag.ticketName = listData[0].ticketName;
             //ViewBag.ticketId = listData[0].ticketId;
             TempData["ticketName"] = listData[0].ticketName;
             TempData["ticketId"] = listData[0].ticketId;
+            ViewBag.ticketHistory = ticketHistory;
 
             var query = await _context.Ticket
                .Include(t => t.Comments)
@@ -81,6 +144,21 @@ namespace BugTrackerWebApp.Controllers
         {
             ViewBag.Users = new SelectList(_context.Users, "UserName");
             ViewBag.Projects = new SelectList(_context.Project, "Id", "Name");
+            if (TempData["projectId"] != null)
+            {
+                string name = (string)TempData["projectName"];
+                int projectId = (int)TempData["projectId"];
+                ViewBag.projectName = name;
+                ViewBag.projectId = projectId;
+                ViewBag.showDropDown = false;
+                TempData["projectName"] = name;
+                TempData["projectId"] = projectId;
+            }
+            else
+            {
+                ViewBag.showDropDown = true;
+            }
+
             return View();
         }
 
@@ -93,13 +171,28 @@ namespace BugTrackerWebApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (TempData["projectId"] != null)
+                {
+                    ticket.ProjectId = (int)TempData["projectId"];
+                }   
                 ticket.SubmitterUserName = User.Identity.Name;
                 ticket.Date_Created = DateTime.Now;
 
                 _context.Add(ticket);
                 await _context.SaveChangesAsync();
+                var ticket_History = new Ticket_History()
+                {
+                    TicketId = ticket.Id,
+                    OldValueUserName = "",
+                    NewValueUserName = ticket.AssignedDeveloperUserName,
+                    Date_Changed = DateTime.Now,
+                    TicketUpdaterUserName = User.Identity.Name
+            };
+                _context.Ticket_History.Add(ticket_History);
+                _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(ticket);
         }
 
@@ -141,6 +234,7 @@ namespace BugTrackerWebApp.Controllers
             var ticketToUpdate = await _context.Ticket.FirstOrDefaultAsync
                 (t => t.Id == id);
             ticketToUpdate.Date_Updated = DateTime.Now;
+            String OldDeveloperUserName = ticketToUpdate.AssignedDeveloperUserName;
 
             if (await TryUpdateModelAsync<Ticket>(ticketToUpdate, "",
                 t=>t.ProjectId, 
@@ -165,6 +259,16 @@ namespace BugTrackerWebApp.Controllers
                                     "Try again, and if the problem persists, " +
                                     "see your system administrator.");
                 }
+                var ticket_History = new Ticket_History()
+                {
+                    TicketId = ticket.Id,
+                    OldValueUserName = OldDeveloperUserName,
+                    NewValueUserName = ticket.AssignedDeveloperUserName,
+                    Date_Changed = DateTime.Now,
+                    TicketUpdaterUserName = User.Identity.Name
+            };
+                _context.Ticket_History.Add(ticket_History);
+                _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
             return View(ticketToUpdate);

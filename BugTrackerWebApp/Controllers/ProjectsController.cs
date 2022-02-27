@@ -1,15 +1,11 @@
-﻿using System;
+﻿using BugTrackerWebApp.Data;
+using BugTrackerWebApp.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using BugTrackerWebApp.Data;
-using BugTrackerWebApp.Models;
-using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using System.Security.Principal;
+using System.Threading.Tasks;
 
 
 namespace BugTrackerWebApp.Controllers
@@ -71,6 +67,8 @@ namespace BugTrackerWebApp.Controllers
             {
                 return NotFound();
             }
+            TempData["projectName"] = project.Name;
+            TempData["projectId"] = project.Id;
 
             return View(project);
         }
@@ -95,6 +93,18 @@ namespace BugTrackerWebApp.Controllers
                 {
                     _context.Add(project);
                     await _context.SaveChangesAsync();
+                    User_Project user_Project = new User_Project();
+                    user_Project.ProjectId = project.Id;
+                    user_Project.UserId = (from u in _context.Users
+                                           where u.UserName == User.Identity.Name
+                                           select u.Id ).FirstOrDefault().ToString();
+
+                    user_Project.UserName = User.Identity.Name;
+                    _context.Add(user_Project);
+                    await _context.SaveChangesAsync();
+
+
+
                     return RedirectToAction(nameof(Index));
                 }
                 else

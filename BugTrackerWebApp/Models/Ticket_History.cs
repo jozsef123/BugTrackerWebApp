@@ -7,14 +7,13 @@ namespace BugTrackerWebApp.Models
     {
         public int Id { get; set; }
         public int TicketId { get; set; }
-        public string AssignedDeveloperUserName { get; set; }
         public string OldValueUserName { get; set; }
         public string NewValueUserName { get; set; }
         public DateTime Date_Changed { get; set; }
         public string TicketUpdaterUserName { get; set; }
         public Ticket Ticket { get; set; }
 
-        Ticket_History()
+        public Ticket_History()
         {
 
         }

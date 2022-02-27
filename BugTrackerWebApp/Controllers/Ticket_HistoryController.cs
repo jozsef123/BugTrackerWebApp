@@ -54,7 +54,7 @@ namespace BugTrackerWebApp.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,TicketId,Assigned_User_Id,Old_Value,New_Value,Date_Changed,User_Id_Changed_it")] Ticket_History ticket_History)
+        public async Task<IActionResult> Create([Bind("Id,TicketId,OldValueUserName,NewValueUserName,Date_Changed,TicketUpdaterUserName")] Ticket_History ticket_History)
         {
             if (ModelState.IsValid)
             {
@@ -86,7 +86,7 @@ namespace BugTrackerWebApp.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,TicketId,Assigned_User_Id,Old_Value,New_Value,Date_Changed,User_Id_Changed_it")] Ticket_History ticket_History)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,TicketId,OldValueUserName,NewValueUserName,Date_Changed,TicketUpdaterUserName")] Ticket_History ticket_History)
         {
             if (id != ticket_History.Id)
             {

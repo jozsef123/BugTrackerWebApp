@@ -1,10 +1,10 @@
-﻿@model IEnumerable<BugTrackerWebApp.Models.File>
+﻿@model IEnumerable<BugTrackerWebApp.Models.App_File>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Ticket Name: @ViewBag.ticketName</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -12,9 +12,6 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.TicketId)
-            </th>
             <th>
                 @Html.DisplayNameFor(model => model.SubmitterUserName)
             </th>
@@ -30,9 +27,6 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.TicketId)
-            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.SubmitterUserName)
             </td>

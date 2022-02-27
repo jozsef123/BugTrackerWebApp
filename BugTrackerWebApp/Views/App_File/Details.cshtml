@@ -1,4 +1,4 @@
-﻿@model BugTrackerWebApp.Models.File
+﻿@model BugTrackerWebApp.Models.App_File
 
 @{
     ViewData["Title"] = "Details";
@@ -11,10 +11,10 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TicketId)
+            Ticket Name
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TicketId)
+            @ViewBag.ticketName
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.SubmitterUserName)
@@ -34,9 +34,15 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Date_Created)
         </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Data)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.ActionLink("Download File", "DownLoadFile", new { id=Model.Id })   
+        </dd>
     </dl>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Back to List</a> 
 </div>

@@ -36,7 +36,7 @@ namespace BugTrackerWebApp.Models
         public Project Project { get; set; }
 
         public ICollection<Comment> Comments { get; set; }
-        public ICollection<File> Files { get; set; }
+        public ICollection<App_File> App_Files { get; set; }
         public ICollection<Ticket_History> Ticket_Histories { get; set; }
 
         public Ticket()

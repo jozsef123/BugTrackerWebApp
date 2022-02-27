@@ -30,21 +30,6 @@ namespace BugTrackerWebApp.Controllers
         // GET: User_Project
         public async Task<IActionResult> Index()
         {
-            // deal with later perhaps, try to query for username and display next to project 
-            //var projects = _context.Project.ToList();
-            //var users = _context.Users.ToList();
-            //var userProjects = _context.User_Project.ToList();
-
-            //var convertedUsers = users.Select(x => new UsersViewModel
-            //{
-            //    Projects = projects
-            //    .Where(y => userProjects.Any(z => z.UserId == x.Id && z.ProjectId == y.Id))
-            //    .Select(y => new User_Project
-            //    {
-            //        UserName = x.UserName
-            //    })
-            //});
-
             var user_projects = _context.User_Project
                 .Include(p => p.Project)
                 .AsNoTracking();
@@ -85,8 +70,28 @@ namespace BugTrackerWebApp.Controllers
         // GET: User_Project/Create
         public IActionResult Create()
         {
-            ViewBag.Users = new SelectList(_context.Users, "Id", "UserName");
+            // query for all users that are not in the project
+            var users = _context.Users
+                .Where(u => !_context.User_Project
+                .Select(up => up.UserId)
+                .Contains(u.Id));
+            ViewBag.Users = new SelectList(users, "Id", "UserName");
             ViewBag.Projects = new SelectList(_context.Project, "Id", "Name");
+            // see if the user was on Project/Details before clicking on add a user to project (User_Project/Create)
+            if (TempData["projectId"] != null)
+            {
+                string name = (string)TempData["projectName"];
+                int projectId = (int)TempData["projectId"];
+                ViewBag.projectName = name;
+                ViewBag.projectId = projectId;
+                ViewBag.showDropDown = false;
+                TempData["projectName"] = name;
+                TempData["projectId"] = projectId;
+            }
+            else
+            {
+                ViewBag.showDropDown = true;
+            }
             return View();
         }
 
@@ -98,13 +103,23 @@ namespace BugTrackerWebApp.Controllers
         public async Task<IActionResult> Create([Bind("Id,UserId, UserName,ProjectId")] User_Project user_Project)
         {
             user_Project.UserName = (from u in _context.Users
-                                    where u.Id == user_Project.UserId
-                                    select u.UserName).Single();
-            if (ModelState.IsValid)
+                                     where u.Id == user_Project.UserId
+                                     select u.UserName).Single();
+            var recordExists = from p in _context.User_Project
+                               where p.UserId == user_Project.UserId && p.ProjectId == user_Project.ProjectId
+                               select p;
+            
+            if (ModelState.IsValid && recordExists.Count() == 0)
             {
                 _context.Add(user_Project);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                Console.WriteLine("Existing record");
+                TempData["Error"] = "User and project already exist in database";
+                return RedirectToAction(nameof(Create));
             }
             return View(user_Project);
         }

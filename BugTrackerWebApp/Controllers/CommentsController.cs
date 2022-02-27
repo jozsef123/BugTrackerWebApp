@@ -22,9 +22,17 @@ namespace BugTrackerWebApp.Controllers
         // GET: Comments
         public async Task<IActionResult> Index()
         {
-            var comments = _context.Comment
-               .Include(t => t.Ticket)
-               .AsNoTracking();
+            var ticketName = TempData["ticketName"];
+            var ticketId = (int)TempData["ticketId"];
+            TempData["ticketId"] = ticketId;
+            TempData["ticketName"] = ticketName;
+            //var comments = _context.Comment
+            //   .Include(t => t.Ticket)
+            //   .AsNoTracking();
+            var comments = from c in _context.Comment
+                           where c.TicketId == ticketId
+                           select c;
+            ViewBag.ticketName = ticketName;
             return View(await comments.ToListAsync());
         }
 
@@ -87,11 +95,22 @@ namespace BugTrackerWebApp.Controllers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (comment == null)
+            var currentUser = User.Identity.Name;
+
+            if (currentUser == comment.SubmitterUserName)
             {
-                return NotFound();
+                if (comment == null)
+                {
+                    return NotFound();
+                }
+                return View(comment);
             }
-            return View(comment);
+            else
+            {
+                Console.WriteLine("Only Comment Submitter can edit");
+                TempData["Error"] = "Only Comment Submitter can edit";
+                return RedirectToAction(nameof(Index));
+            }   
         }
 
         // POST: Comments/Edit/5
@@ -143,6 +162,36 @@ namespace BugTrackerWebApp.Controllers
             if (comment == null)
             {
                 return NotFound();
+            }
+
+            var currentUserName = User.Identity.Name;
+            var currentUser = from u in _context.Users
+                                  where u.UserName == currentUserName
+                                select u.Id.SingleOrDefault();
+
+            var currentUserId = _context.Users.Where(z => z.UserName == currentUserName).Select(z=>z.Id).SingleOrDefault();
+
+            var currentRoles = _context.UserRoles.Where(z=>z.UserId == currentUserId).Select(z=>z.RoleId).ToList();
+
+            var currentRoleName = _context.Roles.Select(z=>z.NormalizedName).ToList();
+
+
+            
+            Console.WriteLine(currentRoleName[0]);
+
+            if (currentUserName == comment.SubmitterUserName || currentRoleName.Contains("ADMIN"))
+            {
+                if (comment == null)
+                {
+                    return NotFound();
+                }
+                return View(comment);
+            }
+            else
+            {
+                Console.WriteLine("Only Comment Submitter or Admin can delete");
+                TempData["Error"] = "Only Comment Submitter or Admin can delete";
+                return RedirectToAction(nameof(Index));
             }
 
             return View(comment);

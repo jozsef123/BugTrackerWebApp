@@ -9,7 +9,8 @@
 
 <div>
     <h4>Ticket</h4>
-    <a asp-controller = "Comments" asp-action="Create">Create a comment for ticket</a>
+    <a asp-controller = "Comments" asp-action="Create">Create a comment for ticket</a> | 
+    <a asp-controller = "Comments" asp-action="Index">View comments for ticket</a>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -83,9 +84,6 @@
         <thead>
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.Name)
-                </th>
-                <th>
                     @*@Html.DisplayNameFor(model => model.SubmitterUserName)*@
                     Submitter
                 </th>
@@ -103,9 +101,6 @@
         <tbody>
         @foreach (var item in Model.Comments) {
                 <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Ticket.Name)
-                    </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.SubmitterUserName)
                     </td>
@@ -126,8 +121,48 @@
     </table>
 </div>
 <div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+
+                    Old UserName Value
+                </th>
+                <th>
+                    New UserName Value
+                </th>
+                <th>
+                   Date Changed
+                </th>
+                <th>
+                    Ticket Updater UserName
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in ViewBag.ticketHistory) {
+                <tr>
+                    <td>
+                        @item.OldValueUserName
+                    </td>
+                    <td>
+                        @item.NewValueUserName
+                    </td>
+                    <td>
+                        @item.Date_Changed
+                    </td>
+                    <td>
+                        @item.TicketUpdaterUserName
+                    </td>
+                </tr>
+        }
+       </tbody>
+    </table>
+</div>
+<div>
     <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
     <a asp-action="Index">Back to Tickets List</a> |
-    <a asp-controller = "Projects" asp-action="Details" asp-route-id="@Model.ProjectId">Back to Project details</a> 
-  
+    <a asp-controller = "Projects" asp-action="Details" asp-route-id="@Model.ProjectId">Back to Project details</a> |
+    <a asp-controller = "App_File" asp-action="Create">Upload file</a>  | 
+    <a asp-controller = "App_File" asp-action="Index">View files for ticket</a> 
 </div>

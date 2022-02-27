@@ -19,6 +19,41 @@ namespace BugTrackerWebApp.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("BugTrackerWebApp.Models.App_File", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<byte[]>("Data")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<DateTime>("Date_Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubmitterUserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("App_File");
+                });
+
             modelBuilder.Entity("BugTrackerWebApp.Models.Comment", b =>
                 {
                     b.Property<int>("Id")
@@ -43,36 +78,6 @@ namespace BugTrackerWebApp.Migrations
                     b.HasIndex("TicketId");
 
                     b.ToTable("Comment");
-                });
-
-            modelBuilder.Entity("BugTrackerWebApp.Models.File", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<byte[]>("Data")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<DateTime>("Date_Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SubmitterUserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TicketId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TicketId");
-
-                    b.ToTable("File");
                 });
 
             modelBuilder.Entity("BugTrackerWebApp.Models.Project", b =>
@@ -143,9 +148,6 @@ namespace BugTrackerWebApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("AssignedDeveloperUserName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Date_Changed")
                         .HasColumnType("datetime2");
@@ -392,19 +394,19 @@ namespace BugTrackerWebApp.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("BugTrackerWebApp.Models.Comment", b =>
+            modelBuilder.Entity("BugTrackerWebApp.Models.App_File", b =>
                 {
                     b.HasOne("BugTrackerWebApp.Models.Ticket", "Ticket")
-                        .WithMany("Comments")
+                        .WithMany("App_Files")
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BugTrackerWebApp.Models.File", b =>
+            modelBuilder.Entity("BugTrackerWebApp.Models.Comment", b =>
                 {
                     b.HasOne("BugTrackerWebApp.Models.Ticket", "Ticket")
-                        .WithMany("Files")
+                        .WithMany("Comments")
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
