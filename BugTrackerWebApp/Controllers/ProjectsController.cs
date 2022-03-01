@@ -32,16 +32,21 @@ namespace BugTrackerWebApp.Controllers
 
             // Source: https://stackoverflow.com/questions/27372187/how-to-get-name-from-another-table-with-id-mvc-5
             // get the role id that matches user id in UserRoles table
-            string roleId = _context.UserRoles.FirstOrDefault(x=>x.UserId == userId).RoleId;
-            //Console.WriteLine(roleId);
-            // get the role name in Roles table that matches the role id from the UserRoles table 
-            string roleName = _context.Roles.FirstOrDefault(x=>x.Id == roleId).Name;
-            //Console.WriteLine(roleName);
-            if (roleName == "Admin")
-            {
-                return View(await _context.Project.ToListAsync());
-            }
+            //var roleId = _context.UserRoles.FirstOrDefault(x=>x.UserId == userId).RoleId;
 
+            var roleId = from u in _context.UserRoles
+                         where u.UserId == userId
+                         select u.RoleId;
+            // get the role name in Roles table that matches the role id from the UserRoles table 
+            if (roleId.Count() > 0)
+            {
+                string roleName = _context.Roles.FirstOrDefault(x => x.Id == roleId.ToString()).Name;
+                //Console.WriteLine(roleName);
+                if (roleName == "Admin")
+                {
+                    return View(await _context.Project.ToListAsync());
+                }
+            }
 
             var projects = _context.Project
                 .Where(x => projectIDs.Contains(x.Id))
@@ -53,26 +58,40 @@ namespace BugTrackerWebApp.Controllers
         // GET: Projects/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            // check to make sure current user has project in user table
+            var claimsIdentity = (ClaimsIdentity)this.User.Identity;
+            var claim = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            var userId = claim.Value;       // current user ID
+            var userProjects = from u in _context.User_Project
+                        where u.UserId == userId
+                        select u;
+            if (userProjects.Count() > 0)
             {
-                return NotFound();
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var project = await _context.Project
+                    .Include(p => p.Tickets)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(m => m.Id == id);
+
+                if (project == null)
+                {
+                    return NotFound();
+                }
+                TempData["projectName"] = project.Name;
+                TempData["projectId"] = project.Id;
+
+                TempData["showDropDown"] = false;                       // if user creates a new ticket, show Project Name
+
+                return View(project);
             }
-
-            var project = await _context.Project
-                .Include(p => p.Tickets)
-                .AsNoTracking()          
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-            if (project == null)
+            else
             {
-                return NotFound();
+                return NoContent();
             }
-            TempData["projectName"] = project.Name;
-            TempData["projectId"] = project.Id;
-
-            TempData["showDropDown"] = false;                       // if user creates a new ticket, show Project Name
-
-            return View(project);
         }
 
         // GET: Projects/Create
@@ -120,17 +139,30 @@ namespace BugTrackerWebApp.Controllers
         // GET: Projects/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            var claimsIdentity = (ClaimsIdentity)this.User.Identity;
+            var claim = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            var userId = claim.Value;       // current user ID
+            var userProjects = from u in _context.User_Project
+                               where u.UserId == userId
+                               select u;
+            if (userProjects.Count() > 0)
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var project = await _context.Project.FindAsync(id);
-            if (project == null)
-            {
-                return NotFound();
+                var project = await _context.Project.FindAsync(id);
+                if (project == null)
+                {
+                    return NotFound();
+                }
+                return View(project);
             }
-            return View(project);
+            else
+            {
+                return NoContent();
+            }
         }
 
         // POST: Projects/Edit/5
@@ -171,19 +203,32 @@ namespace BugTrackerWebApp.Controllers
         // GET: Projects/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            var claimsIdentity = (ClaimsIdentity)this.User.Identity;
+            var claim = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            var userId = claim.Value;       // current user ID
+            var userProjects = from u in _context.User_Project
+                               where u.UserId == userId
+                               select u;
+            if (userProjects.Count() > 0)
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var project = await _context.Project
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (project == null)
+                var project = await _context.Project
+                    .FirstOrDefaultAsync(m => m.Id == id);
+                if (project == null)
+                {
+                    return NotFound();
+                }
+
+                return View(project);
+            }
+            else
             {
-                return NotFound();
+                return NoContent();
             }
-
-            return View(project);
         }
 
         // POST: Projects/Delete/5

@@ -3,10 +3,10 @@ using BugTrackerWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using PagedList;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace BugTrackerWebApp.Controllers
@@ -39,6 +39,13 @@ namespace BugTrackerWebApp.Controllers
             }
 
             ViewData["CurrentFilter"] = searchString;
+
+            var claimsIdentity = (ClaimsIdentity)this.User.Identity;
+            var claim = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            var userId = claim.Value;       // current user ID
+            var projectIds = from u in _context.User_Project
+                               where u.UserId == userId
+                               select u.ProjectId;
 
             var tickets = _context.Ticket
                 .Include(t => t.Project)
@@ -75,6 +82,7 @@ namespace BugTrackerWebApp.Controllers
                 default:
                     break;
             }
+            TempData["showDropDown"] = true;
             int pageSize = 5;
             return View(await PaginatedList<Ticket>.CreateAsync(tickets.AsNoTracking(), pageNumber ?? 1, pageSize));
             //return View(await tickets.ToListAsync());
