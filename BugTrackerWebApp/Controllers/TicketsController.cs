@@ -47,9 +47,11 @@ namespace BugTrackerWebApp.Controllers
                                where u.UserId == userId
                                select u.ProjectId;
 
-            var tickets = _context.Ticket
-                .Include(t => t.Project)
-                .AsNoTracking();
+            var tickets = from t in _context.Ticket
+                          where projectIds.Contains(t.ProjectId)
+                          select t;
+            tickets = tickets.Include(t => t.Project).AsNoTracking();
+
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -96,52 +98,77 @@ namespace BugTrackerWebApp.Controllers
                 return NotFound();
             }
 
+            var claimsIdentity = (ClaimsIdentity)this.User.Identity;
+            var claim = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            var userId = claim.Value;       // current user ID
+            var projectIds = from u in _context.User_Project
+                             where u.UserId == userId
+                             select u.ProjectId;
 
-            // get the name of project and send to viewbag
+            var tickets = from t in _context.Ticket
+                          where projectIds.Contains(t.ProjectId)
+                          select t;
+            tickets = tickets.Include(t => t.Project).AsNoTracking();
 
-            var listData = (from ticket in _context.Ticket
-                               join project in _context.Project
-                               on ticket.ProjectId equals project.Id
-                               where ticket.Id == id
-                               select new
-                               {
-                                   projectName = project.Name,
-                                   ticketName = ticket.Name,
-                                   ticketId = ticket.Id
-                               }
-                               ).ToList();
-
-            // get the ticket history for the ticket
-
-            var ticketHistory = from th in _context.Ticket_History
-                                join t in _context.Ticket
-                                on th.TicketId equals t.Id
-                                where th.TicketId == id
-                                select new Ticket_History
-                                {
-                                    OldValueUserName = th.OldValueUserName,
-                                    NewValueUserName = th.NewValueUserName,
-                                    Date_Changed = th.Date_Changed,
-                                    TicketUpdaterUserName = th.TicketUpdaterUserName
-                                };
-
-
-            ViewBag.projectName = listData[0].projectName;
-            TempData["ticketName"] = listData[0].ticketName;
-            TempData["ticketId"] = listData[0].ticketId;
-            ViewBag.ticketHistory = ticketHistory;
-
-            var query = await _context.Ticket
-               .Include(t => t.Comments)
-               .AsNoTracking()
-               .FirstOrDefaultAsync(m => m.Id == id);
-
-            if (query == null)
+            var valid = from u in _context.Ticket
+                        where u.Id == id
+                        select u;
+            if (valid.Count() > 0)
             {
-                return NotFound();
+                // get the name of project and send to viewbag
+
+
+                var listData = (from ticket in _context.Ticket
+                                join project in _context.Project
+                                on ticket.ProjectId equals project.Id
+                                where ticket.Id == id
+                                select new
+                                {
+                                    projectName = project.Name,
+                                    ticketName = ticket.Name,
+                                    ticketId = ticket.Id
+                                }
+                                   ).ToList();
+
+                // get the ticket history for the ticket
+
+                var ticketHistory = from th in _context.Ticket_History
+                                    join t in _context.Ticket
+                                    on th.TicketId equals t.Id
+                                    where th.TicketId == id
+                                    select new Ticket_History
+                                    {
+                                        OldValueUserName = th.OldValueUserName,
+                                        NewValueUserName = th.NewValueUserName,
+                                        Date_Changed = th.Date_Changed,
+                                        TicketUpdaterUserName = th.TicketUpdaterUserName
+                                    };
+
+
+                ViewBag.projectName = listData[0].projectName;
+                TempData["ticketName"] = listData[0].ticketName;
+                TempData["ticketId"] = listData[0].ticketId;
+                ViewBag.ticketHistory = ticketHistory;
+
+                var query = await _context.Ticket
+                   .Include(t => t.Comments)
+                   .AsNoTracking()
+                   .FirstOrDefaultAsync(m => m.Id == id);
+
+                if (query == null)
+                {
+                    return NotFound();
+                }
+
+                return View(query);
+            }
+            else
+            {
+                return NoContent();
             }
 
-            return View(query);
+
+            
         }
 
         // GET: Tickets/Create
@@ -208,16 +235,39 @@ namespace BugTrackerWebApp.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Ticket
+            var claimsIdentity = (ClaimsIdentity)this.User.Identity;
+            var claim = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            var userId = claim.Value;       // current user ID
+            var projectIds = from u in _context.User_Project
+                             where u.UserId == userId
+                             select u.ProjectId;
+
+            var tickets = from t in _context.Ticket
+                          where projectIds.Contains(t.ProjectId)
+                          select t;
+            tickets = tickets.Include(t => t.Project).AsNoTracking();
+
+            var valid = from u in _context.Ticket
+                        where u.Id == id
+                        select u;
+            if (valid.Count() > 0)
+            {
+
+                var ticket = await _context.Ticket
                 .Include(t => t.Project)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (ticket == null)
-            {
-                return NotFound();
+                if (ticket == null)
+                {
+                    return NotFound();
+                }
+                ViewBag.Users = new SelectList(_context.Users, "UserName");
+                return View(ticket);
             }
-            ViewBag.Users = new SelectList(_context.Users, "UserName");
-            return View(ticket);
+            else
+            {
+                return NoContent();
+            }
         }
 
         // POST: Tickets/Edit/5
@@ -286,15 +336,37 @@ namespace BugTrackerWebApp.Controllers
             {
                 return NotFound();
             }
+            var claimsIdentity = (ClaimsIdentity)this.User.Identity;
+            var claim = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            var userId = claim.Value;       // current user ID
+            var projectIds = from u in _context.User_Project
+                             where u.UserId == userId
+                             select u.ProjectId;
 
-            var ticket = await _context.Ticket
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (ticket == null)
+            var tickets = from t in _context.Ticket
+                          where projectIds.Contains(t.ProjectId)
+                          select t;
+            tickets = tickets.Include(t => t.Project).AsNoTracking();
+
+            var valid = from u in _context.Ticket
+                        where u.Id == id
+                        select u;
+            if (valid.Count() > 0)
             {
-                return NotFound();
-            }
 
-            return View(ticket);
+                var ticket = await _context.Ticket
+                .FirstOrDefaultAsync(m => m.Id == id);
+                if (ticket == null)
+                {
+                    return NotFound();
+                }
+
+                return View(ticket);
+            }
+            else
+            {
+                return NoContent();
+            }
         }
 
         // POST: Tickets/Delete/5

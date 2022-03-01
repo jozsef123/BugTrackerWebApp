@@ -32,17 +32,16 @@ namespace BugTrackerWebApp.Controllers
 
             // Source: https://stackoverflow.com/questions/27372187/how-to-get-name-from-another-table-with-id-mvc-5
             // get the role id that matches user id in UserRoles table
-            //var roleId = _context.UserRoles.FirstOrDefault(x=>x.UserId == userId).RoleId;
-
             var roleId = from u in _context.UserRoles
                          where u.UserId == userId
                          select u.RoleId;
             // get the role name in Roles table that matches the role id from the UserRoles table 
             if (roleId.Count() > 0)
             {
-                string roleName = _context.Roles.FirstOrDefault(x => x.Id == roleId.ToString()).Name;
-                //Console.WriteLine(roleName);
-                if (roleName == "Admin")
+                var roleName = from r in _context.Roles
+                                  where roleId.Contains(r.Id)
+                                  select r.Name;
+                if (roleName.Contains("Admin"))
                 {
                     return View(await _context.Project.ToListAsync());
                 }
