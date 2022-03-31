@@ -66,7 +66,7 @@ namespace BugTrackerWebApp
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.UseUrls("http://*:" + Environment.GetEnvironmentVariable("PORT"));
+                    webBuilder.UseUrls("https://bug-tracker-web-app-jozsef.herokuapp.com/");
                 });
     }
 }
