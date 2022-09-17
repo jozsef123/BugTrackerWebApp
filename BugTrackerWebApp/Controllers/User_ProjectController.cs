@@ -33,6 +33,7 @@ namespace BugTrackerWebApp.Controllers
             var user_projects = _context.User_Project
                 .Include(p => p.Project)
                 .AsNoTracking();
+            TempData["projectId"] = null;
             return View(await user_projects.ToListAsync());
 
         }
@@ -52,8 +53,6 @@ namespace BugTrackerWebApp.Controllers
                     "where u.Id = up.UserId";
             }
 
-            Console.WriteLine("Hello here!!!");
-            Console.WriteLine(sqlQuery);
             var user_Project = await _context.User_Project
                 .Include(p=>p.Project)
                 .AsNoTracking()
@@ -88,8 +87,7 @@ namespace BugTrackerWebApp.Controllers
                 TempData["projectName"] = name;
                 TempData["projectId"] = projectId;
             }
-            else
-            {
+            else {
                 ViewBag.showDropDown = true;
             }
             return View();
@@ -100,16 +98,20 @@ namespace BugTrackerWebApp.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserId, UserName,ProjectId")] User_Project user_Project)
+        public async Task<IActionResult> Create([Bind("Id,ProjectId, UserId, UserName")] User_Project user_Project)
         {
+           
             user_Project.UserName = (from u in _context.Users
                                      where u.Id == user_Project.UserId
                                      select u.UserName).Single();
+            user_Project.ProjectId = (int)TempData["projectId"];
+            user_Project.Project = (from p in _context.Project
+                                    where p.Id == user_Project.ProjectId
+                                    select p).Single();
             var recordExists = from p in _context.User_Project
                                where p.UserId == user_Project.UserId && p.ProjectId == user_Project.ProjectId
                                select p;
-            
-            if (ModelState.IsValid && recordExists.Count() == 0)
+            if (ModelState.IsValid  && recordExists.Count() == 0)
             {
                 _context.Add(user_Project);
                 await _context.SaveChangesAsync();
@@ -121,7 +123,6 @@ namespace BugTrackerWebApp.Controllers
                 TempData["Error"] = "User and project already exist in database";
                 return RedirectToAction(nameof(Create));
             }
-            return View(user_Project);
         }
 
         // GET: User_Project/Edit/5

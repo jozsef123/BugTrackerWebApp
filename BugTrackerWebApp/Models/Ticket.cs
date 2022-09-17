@@ -9,7 +9,7 @@ namespace BugTrackerWebApp.Models
         Low, Medium, High
     }
 
-    //https://community.atlassian.com/t5/Jira-articles/Understanding-issue-types-in-jira/ba-p/1497237
+    // https://community.atlassian.com/t5/Jira-articles/Understanding-issue-types-in-jira/ba-p/1497237
     public enum Type
     {
         Story, Task, Bug, Subtask, Epic 
