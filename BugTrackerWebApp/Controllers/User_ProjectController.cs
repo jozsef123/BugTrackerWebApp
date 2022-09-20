@@ -12,7 +12,7 @@ using Microsoft.Data.SqlClient;
 
 namespace BugTrackerWebApp.Controllers
 {
-    public class User_ProjectController : Controller
+    public class User_ProjectController : Microsoft.AspNetCore.Mvc.Controller
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ApplicationDbContext _context;

@@ -10,7 +10,7 @@ using BugTrackerWebApp.Models;
 
 namespace BugTrackerWebApp.Controllers
 {
-    public class Ticket_HistoryController : Controller
+    public class Ticket_HistoryController : Microsoft.AspNetCore.Mvc.Controller
     {
         private readonly ApplicationDbContext _context;
 

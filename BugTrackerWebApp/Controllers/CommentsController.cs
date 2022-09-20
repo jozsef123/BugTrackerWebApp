@@ -10,7 +10,7 @@ using BugTrackerWebApp.Models;
 
 namespace BugTrackerWebApp.Controllers
 {
-    public class CommentsController : Controller
+    public class CommentsController : Microsoft.AspNetCore.Mvc.Controller
     {
         private readonly ApplicationDbContext _context;
 
@@ -194,7 +194,7 @@ namespace BugTrackerWebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(comment);
+            
         }
 
         // POST: Comments/Delete/5

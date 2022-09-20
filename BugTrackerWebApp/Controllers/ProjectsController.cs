@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BugTrackerWebApp.Controllers
 {
-    public class ProjectsController : Controller
+    public class ProjectsController : Microsoft.AspNetCore.Mvc.Controller
     {
         private readonly ApplicationDbContext _context;
 

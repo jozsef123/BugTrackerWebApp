@@ -1,0 +1,78 @@
+﻿@model BugTrackerWebApp.Models.Ticket
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Ticket</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Project.Name" class="control-label">Project Name</label>
+            @if ((bool)TempData["showDropDown"] == false)
+            {
+                <input readonly value = "@ViewBag.projectName" class="form-control" type = "text"/>
+                <span validation-for= @ViewBag.projectName class="text-danger"></span>
+            }
+            else
+            {
+             <br />
+             @Html.DropDownListFor(m => m.ProjectId, 
+                    (SelectList)@ViewBag.Projects,
+                    "Select Project" )
+            }
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Ticket Name</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label">Ticket Description</label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AssignedDeveloperUserName" class="control-label">Assigned Developer</label>
+                <br />
+                @Html.DropDownListFor(m => m.AssignedDeveloperUserName, 
+                    (SelectList)ViewBag.Users, "Select a Developer"
+                )
+            </div>
+            <div class="form-group">
+                <label asp-for="Priority" class="control-label"></label>
+                <br />
+                @Html.DropDownListFor(m => m.Priority, new SelectList(Enum.GetValues(typeof(Priority))),
+                "Select Ticket Priority")
+            </div>
+            <div class="form-group">
+                <label asp-for="Type" class="control-label"></label>
+                <br />
+                @Html.DropDownListFor(m => m.Type, new SelectList(Enum.GetValues(typeof(BugTrackerWebApp.Models.Type))),
+                "Select Ticket Type")               
+            </div>
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>
+                <br />
+                @Html.DropDownListFor(m => m.Status, new SelectList(Enum.GetValues(typeof(Status))),
+                "Select Ticket Status")
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

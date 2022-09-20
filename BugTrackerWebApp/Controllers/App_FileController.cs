@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BugTrackerWebApp.Controllers
 {
-    public class App_FileController : Controller
+    public class App_FileController : Microsoft.AspNetCore.Mvc.Controller
     {
         private readonly ApplicationDbContext _context;
 
@@ -56,7 +56,7 @@ namespace BugTrackerWebApp.Controllers
         }
 
         [HttpGet]
-        public FileResult DownLoadFile(int id)
+        public Microsoft.AspNetCore.Mvc.FileResult DownLoadFile(int id)
         {
             var FileById = (from a in _context.App_File
                             where a.Id.Equals(id)

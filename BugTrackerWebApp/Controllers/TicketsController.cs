@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BugTrackerWebApp.Controllers
 {
-    public class TicketsController : Controller
+    public class TicketsController : Microsoft.AspNetCore.Mvc.Controller
     {
         private readonly ApplicationDbContext _context;
   
@@ -21,13 +21,18 @@ namespace BugTrackerWebApp.Controllers
             _context = context;
         }
 
+
+
         // GET: Tickets
         public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
         {
+            Console.WriteLine(sortOrder);
             ViewData["CurrentSort"] = sortOrder;
             ViewData["StatusSortParm"] = sortOrder == "Status" ? "closed" : "Status";
             ViewData["DateCreatedSortParm"] = sortOrder == "DateCreated" ? "dateCreated_desc" : "DateCreated";
             ViewData["DateUpdatedSortParm"] = sortOrder == "DateUpdated" ? "dateUpdated_desc" : "DateUpdated";
+
+            
 
             if (searchString != null)
             {
@@ -53,14 +58,15 @@ namespace BugTrackerWebApp.Controllers
             tickets = tickets.Include(t => t.Project).AsNoTracking();
 
 
-            if (!String.IsNullOrEmpty(searchString))
+            if (!string.IsNullOrEmpty(searchString))
             {
-                tickets = tickets.Where(t => t.Name.Contains(searchString) 
+                tickets = tickets.Where(t => t.Name.Contains(searchString)
                                      || t.Project.Name.Contains(searchString)
                                      || t.Description.Contains(searchString)
                                      || t.SubmitterUserName.Contains(searchString)
                                      || t.AssignedDeveloperUserName.Contains(searchString));
             }
+
             switch (sortOrder)
             {
                 case "Status":
