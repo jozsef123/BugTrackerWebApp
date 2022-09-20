@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 namespace BugTrackerWebApp.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class RolesController : Controller
+    public class RolesController : Microsoft.AspNetCore.Mvc.Controller
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ApplicationDbContext _context;
@@ -75,12 +76,15 @@ namespace BugTrackerWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateUserRole(UpdateUserRoleViewModel vm)
         {
-            var user = await _userManager.FindByEmailAsync(vm.UserEmail);
+            if (vm.UserEmail != null && vm.Role != null)
+            {
+                var user = await _userManager.FindByEmailAsync(vm.UserEmail);
 
-            if (vm.Delete)
-                await _userManager.RemoveFromRoleAsync(user, vm.Role);
-            else
-                await _userManager.AddToRoleAsync(user, vm.Role);
+                if (vm.Delete)
+                    await _userManager.RemoveFromRoleAsync(user, vm.Role);
+                else
+                    await _userManager.AddToRoleAsync(user, vm.Role);
+            }
 
             return RedirectToAction("Index");
         }

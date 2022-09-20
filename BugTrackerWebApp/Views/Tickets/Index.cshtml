@@ -8,11 +8,12 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-@using (Html.BeginForm("Index", "Ticket", FormMethod.Get))
+@using (Html.BeginForm("Index", "Tickets", FormMethod.Get))
 {
     <p>
         Find: @Html.TextBox("SearchString")  
-        <input type="submit" value="Search" /></p>
+        <input type="submit" value="Search" />
+    </p>
 }
 <table class="table">
     <thead>
@@ -42,22 +43,16 @@
             </th>
 
             <th>
-                @*@Html.DisplayNameFor(model => model.Status)*@
-@*                @Html.ActionLink("Status", "Index", new { sortOrder = ViewBag.StatusSortParm })*@
                 <a asp-action="Index" 
                 asp-route-sortOrder="@ViewData["StatusSortParm"]" 
                 asp-route-currentFilter="@ViewData["CurrentFilter"]">Status</a>
             </th>
             <th>
-                @*@Html.DisplayNameFor(model => model.Date_Created)*@
-                @*@Html.ActionLink("Date Created", "Index", new { sortOrder = ViewBag.DateCreatedSortParm })*@
                  <a asp-action="Index" 
                 asp-route-sortOrder="@ViewData["DateCreatedSortParm"]" 
                 asp-route-currentFilter="@ViewData["CurrentFilter"]">Date Created</a>
             </th>
             <th>
-                @*@Html.DisplayNameFor(model => model.Date_Updated)*@
-                @*@Html.ActionLink("Date Updated", "Index", new { sortOrder = ViewBag.DateUpdatedSortParm })*@
                 <a asp-action="Index" 
                 asp-route-sortOrder="@ViewData["DateUpdatedSortParm"]" 
                 asp-route-currentFilter="@ViewData["CurrentFilter"]">Date Updated</a>

@@ -24,7 +24,7 @@
             }
         </ul>
     </div>
-    <partial name="_CreateRole" model="new BugTrackerWebApp.Controllers.RoleViewModel()">
+    @*<partial name="_CreateRole" model="new BugTrackerWebApp.Controllers.RoleViewModel()">*@
 </div>
 <div>
     <partial name="_AddUserToRole" model="new BugTrackerWebApp.Controllers.UpdateUserRoleViewModel() { Users = Model.Users, Roles = Model.Roles }">
