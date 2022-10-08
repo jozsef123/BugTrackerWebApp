@@ -1,5 +1,6 @@
 ﻿using BugTrackerWebApp.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -39,7 +40,8 @@ namespace BugTrackerWebApp.Controllers
         [AllowAnonymous]
         public IActionResult Demo()
         {
-            return View();
+            // Create a temporary user that will be deleted after 10 minutes
+            return RedirectToAction("Index", "Home");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
