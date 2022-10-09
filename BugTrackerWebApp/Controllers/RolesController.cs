@@ -16,15 +16,17 @@ namespace BugTrackerWebApp.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ApplicationDbContext _context;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
 
         public RolesController(
             ApplicationDbContext context,
             UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager)
         {
             _roleManager = roleManager;
             _userManager = userManager;
             _context = context;
+            _signInManager = signInManager;
         }
 
         public IActionResult Index()
@@ -63,6 +65,32 @@ namespace BugTrackerWebApp.Controllers
             await _userManager.CreateAsync(user, "Password123!");
 
             return RedirectToAction("Index");
+        }
+       
+        [AllowAnonymous]
+        public async Task<IActionResult> Demo()
+        {
+            Random rnd = new Random();
+            var email = "";
+            // check that email is unique
+            var temp = false;
+
+            do
+            {
+                email = "DemoUser-" + rnd.Next().ToString() + "@test.com";
+                temp = _context.Users.Any(x => x.Email == email);
+            } while (temp.Equals(true));
+                var Password = "Password123!";
+            var user = new IdentityUser
+            {
+                UserName = email,
+                Email = email
+            };
+            // create user
+            await _userManager.CreateAsync(user, Password);
+            // login as user
+            await _signInManager.PasswordSignInAsync(email, Password, isPersistent: false, lockoutOnFailure: false);
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]

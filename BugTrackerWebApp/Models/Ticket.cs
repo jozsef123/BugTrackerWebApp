@@ -1,6 +1,7 @@
 ﻿using BugTrackerWebApp.Data;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace BugTrackerWebApp.Models
 {
@@ -23,6 +24,7 @@ namespace BugTrackerWebApp.Models
     {
         public int Id { get; set; }
         public int ProjectId { get; set; }
+        [Required]
         public string Name { get; set; }
         public string Description { get; set; }
         public string SubmitterUserName { get; set; }
