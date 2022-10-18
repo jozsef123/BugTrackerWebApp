@@ -53,20 +53,6 @@ namespace BugTrackerWebApp.Controllers
             });
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateUser(string email)
-        {
-            var user = new IdentityUser
-            {
-                UserName = email,
-                Email = email
-            };
-
-            await _userManager.CreateAsync(user, "Password123!");
-
-            return RedirectToAction("Index");
-        }
-       
         [AllowAnonymous]
         public async Task<IActionResult> Demo()
         {
@@ -74,7 +60,6 @@ namespace BugTrackerWebApp.Controllers
             var email = "";
             // check that email is unique
             var temp = false;
-
             do
             {
                 email = "DemoUser-" + rnd.Next().ToString() + "@test.com";
@@ -90,6 +75,8 @@ namespace BugTrackerWebApp.Controllers
             await _userManager.CreateAsync(user, Password);
             // login as user
             await _signInManager.PasswordSignInAsync(email, Password, isPersistent: false, lockoutOnFailure: false);
+            // Log out user after 5 minutes
+            // delete user account
             return RedirectToAction("Index", "Home");
         }
 
