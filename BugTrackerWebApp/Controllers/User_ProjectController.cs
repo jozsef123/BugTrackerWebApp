@@ -12,18 +12,16 @@ using Microsoft.Data.SqlClient;
 
 namespace BugTrackerWebApp.Controllers
 {
-    public class User_ProjectController : Microsoft.AspNetCore.Mvc.Controller
+    public class User_ProjectController : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
         private readonly ApplicationDbContext _context;
 
 
         private string connectionString = @"Server=(localdb)\\mssqllocaldb;
                          Database=aspnet-BugTrackerWebApp-BCBCC5F0-00DD-4462-88CA-62FECF41A6C8;
                         Trusted_Connection=True;MultipleActiveResultSets=true";
-        public User_ProjectController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public User_ProjectController(ApplicationDbContext context)
         {
-            _userManager = userManager;
             _context = context;
         }
 

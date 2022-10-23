@@ -32,6 +32,15 @@ namespace BugTrackerWebApp.Controllers
             ViewData["DateCreatedSortParm"] = sortOrder == "DateCreated" ? "dateCreated_desc" : "DateCreated";
             ViewData["DateUpdatedSortParm"] = sortOrder == "DateUpdated" ? "dateUpdated_desc" : "DateUpdated";
 
+            var projects = _context.User_Project.Any(x => x.UserName == User.Identity.Name);
+            if (projects)
+            {
+                ViewBag.CreateNewTicket = true;
+            } else
+            {
+                ViewBag.CreateNewTicket = false;
+            }
+
             
 
             if (searchString != null)
@@ -180,8 +189,12 @@ namespace BugTrackerWebApp.Controllers
         // GET: Tickets/Create
         public IActionResult Create()
         {
+            
+            var projects = from up in _context.User_Project
+                               where up.UserName == User.Identity.Name
+                               select up.Project;
             ViewBag.Users = new SelectList(_context.Users, "UserName");
-            ViewBag.Projects = new SelectList(_context.Project, "Id", "Name");
+            ViewBag.Projects = new SelectList(projects, "Id", "Name");
             if ((bool)TempData["showDropDown"] == false)
             {
                 string name = (string)TempData["projectName"];
