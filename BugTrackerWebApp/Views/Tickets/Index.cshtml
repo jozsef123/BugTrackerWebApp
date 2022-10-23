@@ -5,9 +5,13 @@
 
 <h1>Tickets</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (ViewBag.CreateNewTicket)
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
+
 @using (Html.BeginForm("Index", "Tickets", FormMethod.Get))
 {
     <p>

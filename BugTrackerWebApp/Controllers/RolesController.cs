@@ -1,4 +1,5 @@
-﻿using BugTrackerWebApp.Data;
+﻿using BugTrackerWebApp.Areas.Identity.Pages.Account;
+using BugTrackerWebApp.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -54,29 +55,58 @@ namespace BugTrackerWebApp.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> Demo()
+        public Tuple<IdentityUser, string> GenerateUser()
         {
             Random rnd = new Random();
-            var email = "";
+            string email = "";
             // check that email is unique
-            var temp = false;
+            var foundUserInDatabase = false;
             do
             {
                 email = "DemoUser-" + rnd.Next().ToString() + "@test.com";
-                temp = _context.Users.Any(x => x.Email == email);
-            } while (temp.Equals(true));
-                var Password = "Password123!";
+                foundUserInDatabase = _context.Users.Any(x => x.Email == email);
+            } while (foundUserInDatabase.Equals(true));
+            string password = "Password123!";
             var user = new IdentityUser
             {
                 UserName = email,
-                Email = email
+                Email = email,
             };
+            return new Tuple<IdentityUser, string>(user, password);
+        }
+
+        [AllowAnonymous]
+        public async Task CreateUser(IdentityUser user, string password)
+        {
+            
             // create user
-            await _userManager.CreateAsync(user, Password);
-            // login as user
-            await _signInManager.PasswordSignInAsync(email, Password, isPersistent: false, lockoutOnFailure: false);
-            // Log out user after 5 minutes
-            // delete user account
+            await _userManager.CreateAsync(user, password);
+        }
+
+        [AllowAnonymous]
+        public async Task LoginAsUser(string email, string password)
+        {
+            await _signInManager.PasswordSignInAsync(email, password, isPersistent: false, lockoutOnFailure: false);
+        }
+
+        //[AllowAnonymous]
+        //public async Task DeleteUserAfterDelay(IdentityUser user)
+        //{
+        //    await Task.Delay(5000).ContinueWith(_ =>
+        //    {
+        //        _userManager.DeleteAsync(user);
+
+        //    });
+        //}
+
+        [AllowAnonymous]
+        public async Task<IActionResult> Demo()
+        {
+            (var user, string password) =  GenerateUser();
+            await CreateUser(user, password);
+            await LoginAsUser(user.Email, password);
+            // await DeleteUserAfterDelay(user);
+            
             return RedirectToAction("Index", "Home");
         }
 
