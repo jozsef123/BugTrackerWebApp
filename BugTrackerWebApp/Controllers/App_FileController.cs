@@ -143,22 +143,20 @@ namespace BugTrackerWebApp.Controllers
             {
                 try
                 {
-                    using (var memoryStream = new MemoryStream())
+                    using var memoryStream = new MemoryStream();
+                    if (memoryStream.Length < 2097152)
                     {
-                        if (memoryStream.Length < 2097152)
-                        {
-                            app_File.TicketId = (int)TempData["ticketId"];
-                            app_File.FileName = app_File.FormFile.FileName;
-                            app_File.FileType = app_File.FormFile.ContentType;
-                            await app_File.FormFile.CopyToAsync(memoryStream);
-                            app_File.Data = memoryStream.ToArray();
-                            _context.Update(app_File);
-                            await _context.SaveChangesAsync();
-                        }
-                        else
-                        {
-                            ModelState.AddModelError("File", "The file is too large.");
-                        }
+                        app_File.TicketId = (int)TempData["ticketId"];
+                        app_File.FileName = app_File.FormFile.FileName;
+                        app_File.FileType = app_File.FormFile.ContentType;
+                        await app_File.FormFile.CopyToAsync(memoryStream);
+                        app_File.Data = memoryStream.ToArray();
+                        _context.Update(app_File);
+                        await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("File", "The file is too large.");
                     }
                 }
                 catch (DbUpdateConcurrencyException)

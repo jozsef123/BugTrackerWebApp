@@ -1,5 +1,4 @@
-﻿using BugTrackerWebApp.Areas.Identity.Pages.Account;
-using BugTrackerWebApp.Data;
+﻿using BugTrackerWebApp.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +11,7 @@ using System.Threading.Tasks;
 namespace BugTrackerWebApp.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class RolesController : Microsoft.AspNetCore.Mvc.Controller
+    public class RolesController : Controller
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ApplicationDbContext _context;
@@ -76,37 +75,13 @@ namespace BugTrackerWebApp.Controllers
         }
 
         [AllowAnonymous]
-        public async Task CreateUser(IdentityUser user, string password)
-        {
-            
-            // create user
-            await _userManager.CreateAsync(user, password);
-        }
-
-        [AllowAnonymous]
-        public async Task LoginAsUser(string email, string password)
-        {
-            await _signInManager.PasswordSignInAsync(email, password, isPersistent: false, lockoutOnFailure: false);
-        }
-
-        //[AllowAnonymous]
-        //public async Task DeleteUserAfterDelay(IdentityUser user)
-        //{
-        //    await Task.Delay(5000).ContinueWith(_ =>
-        //    {
-        //        _userManager.DeleteAsync(user);
-
-        //    });
-        //}
-
-        [AllowAnonymous]
         public async Task<IActionResult> Demo()
         {
-            (var user, string password) =  GenerateUser();
-            await CreateUser(user, password);
-            await LoginAsUser(user.Email, password);
-            // await DeleteUserAfterDelay(user);
-            
+            (var user, string password) = GenerateUser();
+
+            await _userManager.CreateAsync(user, password);
+            await _signInManager.PasswordSignInAsync(user.Email, password, isPersistent: false, lockoutOnFailure: false);
+
             return RedirectToAction("Index", "Home");
         }
 

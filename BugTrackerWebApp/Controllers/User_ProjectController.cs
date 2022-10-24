@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -7,8 +6,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BugTrackerWebApp.Data;
 using BugTrackerWebApp.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Data.SqlClient;
 
 namespace BugTrackerWebApp.Controllers
 {
@@ -16,10 +13,6 @@ namespace BugTrackerWebApp.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-
-        private string connectionString = @"Server=(localdb)\\mssqllocaldb;
-                         Database=aspnet-BugTrackerWebApp-BCBCC5F0-00DD-4462-88CA-62FECF41A6C8;
-                        Trusted_Connection=True;MultipleActiveResultSets=true";
         public User_ProjectController(ApplicationDbContext context)
         {
             _context = context;
@@ -44,13 +37,6 @@ namespace BugTrackerWebApp.Controllers
                 return NotFound();
             }
      
-            string sqlQuery = "";
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                sqlQuery = "select u.Username from Users as u, User_Project as up " +
-                    "where u.Id = up.UserId";
-            }
-
             var user_Project = await _context.User_Project
                 .Include(p=>p.Project)
                 .AsNoTracking()
@@ -109,7 +95,7 @@ namespace BugTrackerWebApp.Controllers
             var recordExists = from p in _context.User_Project
                                where p.UserId == user_Project.UserId && p.ProjectId == user_Project.ProjectId
                                select p;
-            if (ModelState.IsValid  && recordExists.Count() == 0)
+            if (ModelState.IsValid  && recordExists.Any())
             {
                 _context.Add(user_Project);
                 await _context.SaveChangesAsync();
