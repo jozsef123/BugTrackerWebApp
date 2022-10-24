@@ -87,17 +87,19 @@ namespace BugTrackerWebApp.Controllers
         public async Task LoginAsUser(string email, string password)
         {
             await _signInManager.PasswordSignInAsync(email, password, isPersistent: false, lockoutOnFailure: false);
+     
         }
 
-        //[AllowAnonymous]
-        //public async Task DeleteUserAfterDelay(IdentityUser user)
-        //{
-        //    await Task.Delay(5000).ContinueWith(_ =>
-        //    {
-        //        _userManager.DeleteAsync(user);
+        [AllowAnonymous]
+        public async void DeleteUserAfterDelay(IdentityUser user)
+        {
+            var fiveMinutes = 300000;
+            await Task.Delay(fiveMinutes).ContinueWith(async _ =>
+            {
+                await _userManager.DeleteAsync(user);
+            });
 
-        //    });
-        //}
+        }
 
         [AllowAnonymous]
         public async Task<IActionResult> Demo()
@@ -105,8 +107,7 @@ namespace BugTrackerWebApp.Controllers
             (var user, string password) =  GenerateUser();
             await CreateUser(user, password);
             await LoginAsUser(user.Email, password);
-            // await DeleteUserAfterDelay(user);
-            
+            DeleteUserAfterDelay(user);
             return RedirectToAction("Index", "Home");
         }
 
