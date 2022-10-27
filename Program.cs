@@ -1,16 +1,20 @@
 using BugTrackerWebApp.Data;
+using BugTrackerWebApp.Migrations;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BugTrackerWebApp
 {
     public class Program
     {
-        public static void Main(string[] args)
+
+
+        public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
 
@@ -62,9 +66,11 @@ namespace BugTrackerWebApp
 
             }
 
-            host.Run();
-        
-    }
+            host.Run();        
+
+            var scope = host.Services.CreateScope();
+            await DataHelper.ManageDataAsync(scope.ServiceProvider);
+        }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
