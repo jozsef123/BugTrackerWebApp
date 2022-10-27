@@ -33,7 +33,7 @@ namespace BugTrackerWebApp
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    ConnectionHelper.GetConnectionString(Configuration)));
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
