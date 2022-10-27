@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.Linq;
 
 namespace BugTrackerWebApp
@@ -15,6 +16,7 @@ namespace BugTrackerWebApp
         public static void Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
             using (var services = host.Services.CreateScope())
             {
