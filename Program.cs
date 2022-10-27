@@ -1,8 +1,12 @@
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using BugTrackerWebApp.Data;
 using BugTrackerWebApp.Migrations;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
@@ -72,9 +76,24 @@ namespace BugTrackerWebApp
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+            .ConfigureAppConfiguration((context, config) =>
+            {
+                var builtConfiguration = config.Build();
+
+                string kvURL = builtConfiguration["KeyVaultConfig:KVUrl"];
+                string tenantId = builtConfiguration["KeyVaultConfig:TenantId"];
+                string clientId = builtConfiguration["KeyVaultConfig:ClientId"];
+                string clientSecret = builtConfiguration["KeyVaultConfig:ClientSecretId"];
+
+                var credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+
+                var client = new SecretClient(new System.Uri(kvURL), credential);
+                config.AddAzureKeyVault(client, new AzureKeyVaultConfigurationOptions());
+
+            })
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
     }
 }
