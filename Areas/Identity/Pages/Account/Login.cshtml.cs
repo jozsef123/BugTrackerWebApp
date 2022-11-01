@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -23,7 +21,6 @@ namespace BugTrackerWebApp.Areas.Identity.Pages.Account
         public LoginModel(SignInManager<IdentityUser> signInManager, 
             ILogger<LoginModel> logger)
         {
-            
             _signInManager = signInManager;
             _logger = logger;
         }
@@ -74,7 +71,7 @@ namespace BugTrackerWebApp.Areas.Identity.Pages.Account
             returnUrl ??= Url.Content("~/");
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-        
+            
             if (ModelState.IsValid)
             {
                 // This doesn't count login failures towards account lockout

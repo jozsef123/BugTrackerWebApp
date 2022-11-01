@@ -22,7 +22,7 @@ namespace BugTrackerWebApp.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("BugTrackerWebApp.Models.App_File", b =>
+            modelBuilder.Entity("BugTrackerWebApp.Models.AppFile", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,32 +30,37 @@ namespace BugTrackerWebApp.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedWhen")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<byte[]>("Data")
                         .HasColumnType("bytea");
-
-                    b.Property<DateTime>("Date_Created")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<string>("FileName")
+                    b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<string>("FileType")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SubmitterUserName")
+                    b.Property<string>("SubmitterId")
                         .HasColumnType("text");
 
                     b.Property<int>("TicketId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Type")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedWhen")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("SubmitterId");
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("App_File");
+                    b.ToTable("AppFile");
                 });
 
             modelBuilder.Entity("BugTrackerWebApp.Models.Comment", b =>
@@ -66,19 +71,24 @@ namespace BugTrackerWebApp.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("Date_Created")
+                    b.Property<DateTime>("CreatedWhen")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Message")
                         .HasColumnType("text");
 
-                    b.Property<string>("SubmitterUserName")
+                    b.Property<string>("SubmitterId")
                         .HasColumnType("text");
 
                     b.Property<int>("TicketId")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime?>("UpdatedWhen")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("SubmitterId");
 
                     b.HasIndex("TicketId");
 
@@ -93,13 +103,21 @@ namespace BugTrackerWebApp.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedWhen")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
+                    b.Property<string>("OwnerId")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Project");
                 });
@@ -112,13 +130,10 @@ namespace BugTrackerWebApp.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AssignedDeveloperUserName")
+                    b.Property<string>("AssignedDeveloperId")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("Date_Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("Date_Updated")
+                    b.Property<DateTime>("CreatedWhen")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
@@ -137,20 +152,27 @@ namespace BugTrackerWebApp.Migrations
                     b.Property<int?>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<string>("SubmitterUserName")
+                    b.Property<string>("SubmitterId")
                         .HasColumnType("text");
 
                     b.Property<int?>("Type")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime?>("UpdatedWhen")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("AssignedDeveloperId");
+
                     b.HasIndex("ProjectId");
+
+                    b.HasIndex("SubmitterId");
 
                     b.ToTable("Ticket");
                 });
 
-            modelBuilder.Entity("BugTrackerWebApp.Models.Ticket_History", b =>
+            modelBuilder.Entity("BugTrackerWebApp.Models.TicketHistory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -158,29 +180,35 @@ namespace BugTrackerWebApp.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("Date_Changed")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("NewValueUserName")
+                    b.Property<string>("NewAssignedDeveloperId")
                         .HasColumnType("text");
 
-                    b.Property<string>("OldValueUserName")
+                    b.Property<string>("PreviousAssignedDeveloperId")
                         .HasColumnType("text");
 
                     b.Property<int>("TicketId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TicketUpdaterUserName")
+                    b.Property<DateTime>("UpdatedWhen")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdaterId")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("NewAssignedDeveloperId");
+
+                    b.HasIndex("PreviousAssignedDeveloperId");
+
                     b.HasIndex("TicketId");
 
-                    b.ToTable("Ticket_History");
+                    b.HasIndex("UpdaterId");
+
+                    b.ToTable("TicketHistory");
                 });
 
-            modelBuilder.Entity("BugTrackerWebApp.Models.User_Project", b =>
+            modelBuilder.Entity("BugTrackerWebApp.Models.UserProject", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -194,14 +222,13 @@ namespace BugTrackerWebApp.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("text");
 
-                    b.Property<string>("UserName")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("User_Project");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserProject");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -404,59 +431,116 @@ namespace BugTrackerWebApp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BugTrackerWebApp.Models.App_File", b =>
+            modelBuilder.Entity("BugTrackerWebApp.Models.AppFile", b =>
                 {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Submitter")
+                        .WithMany()
+                        .HasForeignKey("SubmitterId");
+
                     b.HasOne("BugTrackerWebApp.Models.Ticket", "Ticket")
-                        .WithMany("App_Files")
+                        .WithMany("AppFiles")
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Submitter");
 
                     b.Navigation("Ticket");
                 });
 
             modelBuilder.Entity("BugTrackerWebApp.Models.Comment", b =>
                 {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Submitter")
+                        .WithMany()
+                        .HasForeignKey("SubmitterId");
+
                     b.HasOne("BugTrackerWebApp.Models.Ticket", "Ticket")
                         .WithMany("Comments")
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Submitter");
+
                     b.Navigation("Ticket");
+                });
+
+            modelBuilder.Entity("BugTrackerWebApp.Models.Project", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId");
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("BugTrackerWebApp.Models.Ticket", b =>
                 {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "AssignedDeveloper")
+                        .WithMany()
+                        .HasForeignKey("AssignedDeveloperId");
+
                     b.HasOne("BugTrackerWebApp.Models.Project", "Project")
                         .WithMany("Tickets")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Submitter")
+                        .WithMany()
+                        .HasForeignKey("SubmitterId");
+
+                    b.Navigation("AssignedDeveloper");
+
                     b.Navigation("Project");
+
+                    b.Navigation("Submitter");
                 });
 
-            modelBuilder.Entity("BugTrackerWebApp.Models.Ticket_History", b =>
+            modelBuilder.Entity("BugTrackerWebApp.Models.TicketHistory", b =>
                 {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "NewAssignedDeveloper")
+                        .WithMany()
+                        .HasForeignKey("NewAssignedDeveloperId");
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "PreviousAssignedDeveloper")
+                        .WithMany()
+                        .HasForeignKey("PreviousAssignedDeveloperId");
+
                     b.HasOne("BugTrackerWebApp.Models.Ticket", "Ticket")
-                        .WithMany("Ticket_Histories")
+                        .WithMany("TicketHistory")
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Updater")
+                        .WithMany()
+                        .HasForeignKey("UpdaterId");
+
+                    b.Navigation("NewAssignedDeveloper");
+
+                    b.Navigation("PreviousAssignedDeveloper");
+
                     b.Navigation("Ticket");
+
+                    b.Navigation("Updater");
                 });
 
-            modelBuilder.Entity("BugTrackerWebApp.Models.User_Project", b =>
+            modelBuilder.Entity("BugTrackerWebApp.Models.UserProject", b =>
                 {
                     b.HasOne("BugTrackerWebApp.Models.Project", "Project")
-                        .WithMany("User_Projects")
+                        .WithMany("UserProjects")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
                     b.Navigation("Project");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -514,16 +598,16 @@ namespace BugTrackerWebApp.Migrations
                 {
                     b.Navigation("Tickets");
 
-                    b.Navigation("User_Projects");
+                    b.Navigation("UserProjects");
                 });
 
             modelBuilder.Entity("BugTrackerWebApp.Models.Ticket", b =>
                 {
-                    b.Navigation("App_Files");
+                    b.Navigation("AppFiles");
 
                     b.Navigation("Comments");
 
-                    b.Navigation("Ticket_Histories");
+                    b.Navigation("TicketHistory");
                 });
 #pragma warning restore 612, 618
         }

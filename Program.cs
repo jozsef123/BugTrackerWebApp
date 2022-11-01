@@ -11,8 +11,6 @@ namespace BugTrackerWebApp
 {
     public class Program
     {
-
-
         public static void Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
@@ -42,6 +40,10 @@ namespace BugTrackerWebApp
                 {
                     Id = "d"
                 };
+                var demoRole = new IdentityRole("Demo")
+                {
+                    Id = "e"
+                };
 
                 if (!dbContext.Roles.Any())
                 {
@@ -49,6 +51,7 @@ namespace BugTrackerWebApp
                     roleMgr.CreateAsync(projectManagerRole).GetAwaiter().GetResult();
                     roleMgr.CreateAsync(developerRole).GetAwaiter().GetResult();
                     roleMgr.CreateAsync(submitterRole).GetAwaiter().GetResult();
+                    roleMgr.CreateAsync(demoRole).GetAwaiter().GetResult();
                     
                 }
 
@@ -62,8 +65,6 @@ namespace BugTrackerWebApp
                     var result = userMgr.CreateAsync(adminUser, "Password123!").GetAwaiter().GetResult();
                     userMgr.AddToRoleAsync(adminUser, adminRole.Name).GetAwaiter().GetResult();
                 }
-
-
             }
 
             host.Run();        

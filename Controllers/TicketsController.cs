@@ -1,47 +1,32 @@
 ﻿using BugTrackerWebApp.Data;
 using BugTrackerWebApp.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace BugTrackerWebApp.Controllers
 {
-    public class TicketsController : Microsoft.AspNetCore.Mvc.Controller
+    public class TicketsController :  UsersController
     {
         private readonly ApplicationDbContext _context;
-  
 
-        public TicketsController(ApplicationDbContext context)
-        {
+        public TicketsController(ApplicationDbContext context) : base(context)
+    {
             _context = context;
         }
-
-
 
         // GET: Tickets
         public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
         {
-            Console.WriteLine(sortOrder);
             ViewData["CurrentSort"] = sortOrder;
             ViewData["StatusSortParm"] = sortOrder == "Status" ? "closed" : "Status";
             ViewData["DateCreatedSortParm"] = sortOrder == "DateCreated" ? "dateCreated_desc" : "DateCreated";
             ViewData["DateUpdatedSortParm"] = sortOrder == "DateUpdated" ? "dateUpdated_desc" : "DateUpdated";
-
-            var projects = _context.User_Project.Any(x => x.UserName == User.Identity.Name);
-            if (projects)
-            {
-                ViewBag.CreateNewTicket = true;
-            } else
-            {
-                ViewBag.CreateNewTicket = false;
-            }
-
-            
 
             if (searchString != null)
             {
@@ -54,26 +39,18 @@ namespace BugTrackerWebApp.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var claimsIdentity = (ClaimsIdentity)this.User.Identity;
-            var claim = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
-            var userId = claim.Value;       // current user ID
-            var projectIds = from u in _context.User_Project
-                               where u.UserId == userId
-                               select u.ProjectId;
-
-            var tickets = from t in _context.Ticket
-                          where projectIds.Contains(t.ProjectId)
-                          select t;
-            tickets = tickets.Include(t => t.Project).AsNoTracking();
-
+            // TODO: Should Admin see all tickets?
+            var tickets = GetCurrentUserTickets();
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                tickets = tickets.Where(t => t.Name.Contains(searchString)
-                                     || t.Project.Name.Contains(searchString)
-                                     || t.Description.Contains(searchString)
-                                     || t.SubmitterUserName.Contains(searchString)
-                                     || t.AssignedDeveloperUserName.Contains(searchString));
+                tickets = tickets
+                    .Where(t => 
+                        t.Name.Contains(searchString) ||
+                        t.Project.Name.Contains(searchString) ||
+                        t.Description.Contains(searchString) ||
+                        t.Submitter.UserName.Contains(searchString) ||
+                        t.AssignedDeveloper.UserName.Contains(searchString));
             }
 
             switch (sortOrder)
@@ -85,129 +62,49 @@ namespace BugTrackerWebApp.Controllers
                     tickets = tickets.OrderByDescending(s => s.Status);
                     break;
                 case "DateCreated":
-                    tickets = tickets.OrderBy(s => s.Date_Created);
+                    tickets = tickets.OrderBy(s => s.CreatedWhen);
                     break;
                 case "dateCreated_desc":
-                    tickets = tickets.OrderByDescending(s=>s.Date_Created);
+                    tickets = tickets.OrderByDescending(s=>s.CreatedWhen);
                     break;
                 case "DateUpdated":
-                    tickets = tickets.OrderBy(s => s.Date_Updated);
+                    tickets = tickets.OrderBy(s => s.UpdatedWhen);
                     break;
                 case "dateUpdated_desc":
-                    tickets = tickets.OrderByDescending(s => s.Date_Updated);
+                    tickets = tickets.OrderByDescending(s => s.UpdatedWhen);
                     break;
                 default:
                     break;
             }
-            TempData["showDropDown"] = true;
             int pageSize = 5;
             return View(await PaginatedList<Ticket>.CreateAsync(tickets.AsNoTracking(), pageNumber ?? 1, pageSize));
-            //return View(await tickets.ToListAsync());
         }
 
         // GET: Tickets/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
+            var ticket = GetTicketById(id).First();
+            if (ticket == null) return NotFound();
 
-            var claimsIdentity = (ClaimsIdentity)this.User.Identity;
-            var claim = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
-            var userId = claim.Value;       // current user ID
-            var projectIds = from u in _context.User_Project
-                             where u.UserId == userId
-                             select u.ProjectId;
-
-            var tickets = from t in _context.Ticket
-                          where projectIds.Contains(t.ProjectId)
-                          select t;
-            tickets = tickets.Include(t => t.Project).AsNoTracking();
-
-            var valid = from u in _context.Ticket
-                        where u.Id == id
-                        select u;
-            if (valid.Any())
+            if (GetCurrentUserRoles().Contains("Admin") || IsUserTicket(ticket)) 
             {
-                // get the name of project and send to viewbag
-
-
-                var listData = (from ticket in _context.Ticket
-                                join project in _context.Project
-                                on ticket.ProjectId equals project.Id
-                                where ticket.Id == id
-                                select new
-                                {
-                                    projectName = project.Name,
-                                    ticketName = ticket.Name,
-                                    ticketId = ticket.Id
-                                }
-                                   ).ToList();
-
-                // get the ticket history for the ticket
-
-                var ticketHistory = from th in _context.Ticket_History
-                                    join t in _context.Ticket
-                                    on th.TicketId equals t.Id
-                                    where th.TicketId == id
-                                    select new Ticket_History
-                                    {
-                                        OldValueUserName = th.OldValueUserName,
-                                        NewValueUserName = th.NewValueUserName,
-                                        Date_Changed = th.Date_Changed,
-                                        TicketUpdaterUserName = th.TicketUpdaterUserName
-                                    };
-
-
-                ViewBag.projectName = listData[0].projectName;
-                TempData["ticketName"] = listData[0].ticketName;
-                TempData["ticketId"] = listData[0].ticketId;
-                ViewBag.ticketHistory = ticketHistory;
-
-                var query = await _context.Ticket
-                   .Include(t => t.Comments)
-                   .AsNoTracking()
-                   .FirstOrDefaultAsync(m => m.Id == id);
-
-                if (query == null)
-                {
-                    return NotFound();
-                }
-
-                return View(query);
+                return View(ticket);
             }
-            else
-            {
-                return NoContent();
-            }
-
-
-            
+            return NoContent();
         }
 
         // GET: Tickets/Create
         public IActionResult Create()
         {
-            
-            var projects = from up in _context.User_Project
-                               where up.UserName == User.Identity.Name
-                               select up.Project;
-            ViewBag.Users = new SelectList(_context.Users, "UserName");
+
+            var projects = GetCurrentUserProjects();
+            var users = GetUsersInCurrentUserProjects();
+            ViewBag.Users = new SelectList(users, "Id", "UserName");
             ViewBag.Projects = new SelectList(projects, "Id", "Name");
-            if ((bool)TempData["showDropDown"] == false)
-            {
-                string name = (string)TempData["projectName"];
-                int projectId = (int)TempData["projectId"];
-                ViewBag.projectName = name;
-                ViewBag.projectId = projectId;
-                TempData["projectName"] = name;
-                TempData["projectId"] = projectId;
-            }
-            else
-            {
-                TempData["showDropDown"] = true;
-            }
 
             return View();
         }
@@ -217,28 +114,33 @@ namespace BugTrackerWebApp.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id, ProjectId, Name,Description,SubmitterUserName,AssignedDeveloperUserName,Priority,Type,Status,Date_Created,Date_Updated")] Ticket ticket)
+        public async Task<IActionResult> Create([Bind("Id,ProjectId,Name,Description,SubmitterId,AssignedDeveloperId,Priority,Type,Status,CreatedWhen,UpdatedWhen")] Ticket ticket)
         {
-            if (ModelState.IsValid)
+            // TODO tickets should have unique names?
+            if (ticket.AssignedDeveloperId != null && !IsUserInProject(ticket.AssignedDeveloperId, ticket.ProjectId))
             {
-                if (TempData["projectId"] != null)
-                {
-                    ticket.ProjectId = (int)TempData["projectId"];
-                }   
-                ticket.SubmitterUserName = User.Identity.Name;
-                ticket.Date_Created = DateTime.Now;
+                var projects = GetCurrentUserProjects();
+                var users = GetUsersInCurrentUserProjects();
+                ViewBag.Users = new SelectList(users, "Id", "UserName");
+                ViewBag.Projects = new SelectList(projects, "Id", "Name");
+                ViewBag.ErrorMessage = "Assigned Developer does not exist in the selected project";
+            }
+            else if (ModelState.IsValid)
+            {
+                ticket.Submitter = GetCurrentUser();
+                ticket.CreatedWhen = DateTime.Now;
 
                 _context.Add(ticket);
                 await _context.SaveChangesAsync();
-                var ticket_History = new Ticket_History()
+                var ticketHistory = new TicketHistory()
                 {
                     TicketId = ticket.Id,
-                    OldValueUserName = "",
-                    NewValueUserName = ticket.AssignedDeveloperUserName,
-                    Date_Changed = DateTime.Now,
-                    TicketUpdaterUserName = User.Identity.Name
-            };
-                _context.Ticket_History.Add(ticket_History);
+                    PreviousAssignedDeveloperId = null,
+                    NewAssignedDeveloperId = ticket.AssignedDeveloperId,
+                    UpdatedWhen = DateTime.Now,
+                    Updater = GetCurrentUser()
+                };
+                _context.TicketHistory.Add(ticketHistory);
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
@@ -247,40 +149,18 @@ namespace BugTrackerWebApp.Controllers
         }
 
         // GET: Tickets/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
+            var ticket = GetTicketById(id).AsNoTracking().First();
+            if (ticket == null) return NotFound();
 
-            var claimsIdentity = (ClaimsIdentity)this.User.Identity;
-            var claim = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
-            var userId = claim.Value;       // current user ID
-            var projectIds = from u in _context.User_Project
-                             where u.UserId == userId
-                             select u.ProjectId;
-
-            var tickets = from t in _context.Ticket
-                          where projectIds.Contains(t.ProjectId)
-                          select t;
-            tickets = tickets.Include(t => t.Project).AsNoTracking();
-
-            var valid = from u in _context.Ticket
-                        where u.Id == id
-                        select u;
-            if (valid.Any())
+            if (GetCurrentUserRoles().Contains("Admin") || IsUserTicket(ticket))
             {
-
-                var ticket = await _context.Ticket
-                .Include(t => t.Project)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.Id == id);
-                if (ticket == null)
-                {
-                    return NotFound();
-                }
-                ViewBag.Users = new SelectList(_context.Users, "UserName");
+                ViewBag.Users = new SelectList(GetUsersInProject(ticket.Project),"Id", "UserName");
                 return View(ticket);
             }
             else
@@ -294,7 +174,7 @@ namespace BugTrackerWebApp.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ProjectId,Name,Description,SubmitterUserName,AssignedDeveloperUserName,Priority,Type,Status,Date_Created,Date_Updated")] Ticket ticket)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ProjectId,Name,Description,SubmitterId,AssignedDeveloperId,Priority,Type,Status,CreatedWhen,UpdatedWhen")] Ticket ticket)
         {
 
             if (id != ticket.Id)
@@ -303,26 +183,16 @@ namespace BugTrackerWebApp.Controllers
             }
 
             // Tutorial: Update related data - ASP.NET MVC with EF Core
-            // Source used: https://docs.microsoft.com/en-us/aspnet/core/data/ef-mvc/update-related-data?view=aspnetcore-6.0
-            var ticketToUpdate = await _context.Ticket.FirstOrDefaultAsync
-                (t => t.Id == id);
-            ticketToUpdate.Date_Updated = DateTime.Now;
-            String OldDeveloperUserName = ticketToUpdate.AssignedDeveloperUserName;
+            // Source used: https://docs.microsoft.com/en-us/aspnet/core/data/ef-mvc/update-related-data?view=aspnetcore-6.0            
+            string PreviousDeveloperId = GetTicketById(id).AsNoTracking().First().AssignedDeveloperId;
+            string NewDeveloperId = ticket.AssignedDeveloperId;
 
-            if (await TryUpdateModelAsync<Ticket>(ticketToUpdate, "",
-                t=>t.ProjectId, 
-                t=>t.Name, 
-                t=>t.Description,
-                t=>t.SubmitterUserName,
-                t=>t.AssignedDeveloperUserName,
-                t=>t.Priority,
-                t=>t.Type,
-                t=>t.Status,
-                t=>t.Date_Created,
-                t=>t.Date_Updated))
+            if (ModelState.IsValid)
             {
                 try
                 {
+                    ticket.UpdatedWhen = DateTime.Now;
+                    _context.Update(ticket);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateException /* ex */)
@@ -332,60 +202,40 @@ namespace BugTrackerWebApp.Controllers
                                     "Try again, and if the problem persists, " +
                                     "see your system administrator.");
                 }
-                var ticket_History = new Ticket_History()
+                var ticketHistory = new TicketHistory()
                 {
                     TicketId = ticket.Id,
-                    OldValueUserName = OldDeveloperUserName,
-                    NewValueUserName = ticket.AssignedDeveloperUserName,
-                    Date_Changed = DateTime.Now,
-                    TicketUpdaterUserName = User.Identity.Name
-            };
-                _context.Ticket_History.Add(ticket_History);
+                    PreviousAssignedDeveloperId = PreviousDeveloperId,
+                    NewAssignedDeveloperId = NewDeveloperId,
+                    UpdatedWhen = DateTime.Now,
+                    Updater = GetCurrentUser()
+                };
+                _context.TicketHistory.Add(ticketHistory);
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
-            return View(ticketToUpdate);
+            return View(ticket);
 
         }
 
         // GET: Tickets/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            var claimsIdentity = (ClaimsIdentity)this.User.Identity;
-            var claim = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
-            var userId = claim.Value;       // current user ID
-            var projectIds = from u in _context.User_Project
-                             where u.UserId == userId
-                             select u.ProjectId;
 
-            var tickets = from t in _context.Ticket
-                          where projectIds.Contains(t.ProjectId)
-                          select t;
-            tickets = tickets.Include(t => t.Project).AsNoTracking();
-
-            var valid = from u in _context.Ticket
-                        where u.Id == id
-                        select u;
-            if (valid.Any())
+            var ticket = GetTicketById(id).First();
+            if (ticket == null)
             {
-
-                var ticket = await _context.Ticket
-                .FirstOrDefaultAsync(m => m.Id == id);
-                if (ticket == null)
-                {
-                    return NotFound();
-                }
-
+                return NotFound();
+            }
+            if (GetCurrentUserRoles().Contains("Admin") || IsUserTicket(ticket))
+            {
                 return View(ticket);
             }
-            else
-            {
-                return NoContent();
-            }
+            return NoContent();
         }
 
         // POST: Tickets/Delete/5
