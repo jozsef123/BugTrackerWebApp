@@ -4,64 +4,41 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
-
-<p>
-    <a asp-action="Create" asp-controller="Tickets">Create New Ticket</a>
-</p>
-
+<section>
+    <h1>Details</h1>
+    <h4>Project: @Html.DisplayFor(model => model.Name)</h4>
+    <b>Owner: </b>@Html.DisplayFor(model => model.Owner.UserName)
+    <div class="form-group" style="min-width:900px">
+        <label asp-for="Description" class="control-label">
+            <b>Description: </b>
+        </label>
+        <textarea readonly asp-for="Description" class="form-control" style="height: 200px"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+</section>
 <div>
-    <h4>Project</h4>
-    <hr />
-    <table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-        <td>
-            @Html.DisplayFor(model => model.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(model => model.Description)
-        </td>
-        </tr>
-    </tbody>
-    </table>
      <table class="table">
     <thead>
         <tr>
-            <th>
-                Tickets
+                <th class="col-sm-9">
+                Ticket Name
             </th>
             <th>
-                Description
+                Action
             </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model.Tickets)
         {
             <tr>
-                <td>
+                <td class="col-sm-9">
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
-                <td>
-                <a asp-controller = "Tickets" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-controller = "Tickets" asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-controller = "Tickets" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-controller="Tickets" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edit</a> 
+                <a asp-controller="Tickets" asp-action="Details" asp-route-id="@item.Id" class="btn btn-success btn-sm">Details</a> 
+                <a asp-controller="Tickets" asp-action="Delete" asp-route-id="@item.Id"class="btn btn-danger btn-sm">Delete</a>
             </td>
             </tr>
 
@@ -70,7 +47,8 @@
     </table>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Create" asp-controller="User_Project">Add User to Project</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a> 
+    <a asp-action="Create" asp-controller="UserProject" class="btn btn-primary">Add User to Project</a> 
+    <a asp-action="Create" asp-controller="Tickets" class="btn btn-primary">Create New Ticket</a> 
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 </div>

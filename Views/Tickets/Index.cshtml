@@ -4,19 +4,16 @@
 }
 
 <h1>Tickets</h1>
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+</p>
 
-@if (ViewBag.CreateNewTicket)
-{
-    <p>
-        <a asp-action="Create">Create New</a>
-    </p>
-}
 
 @using (Html.BeginForm("Index", "Tickets", FormMethod.Get))
 {
     <p>
         Find: @Html.TextBox("SearchString")  
-        <input type="submit" value="Search" />
+        <input type="submit" value="Search" class="btn btn-primary"/>
     </p>
 }
 <table class="table">
@@ -26,17 +23,9 @@
                 Project Name
             </th>
             <th>
-                Name
+                Ticket Name
             </th>
             <th>
-                Description
-            </th>
-            <th>
-               @* @Html.DisplayNameFor(model => model.SubmitterId)*@
-               Submitter 
-            </th>
-            <th>
-                @*@Html.DisplayNameFor(model => model.AssignedDeveloperUserName)*@
                 Assigned Developer
             </th>
             <th>
@@ -45,7 +34,6 @@
             <th>
                 Type
             </th>
-
             <th>
                 <a asp-action="Index" 
                 asp-route-sortOrder="@ViewData["StatusSortParm"]" 
@@ -75,13 +63,7 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SubmitterUserName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AssignedDeveloperUserName)
+                @Html.DisplayFor(modelItem => item.AssignedDeveloper.UserName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Priority)
@@ -93,15 +75,15 @@
                 @Html.DisplayFor(modelItem => item.Status)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Date_Created)
+                @Html.DisplayFor(modelItem => item.CreatedWhen)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Date_Updated)
+                @Html.DisplayFor(modelItem => item.UpdatedWhen)
             </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            <td width="200">
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edit</a>
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-success btn-sm">Details</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Delete</a>
             </td>
         </tr>
 }

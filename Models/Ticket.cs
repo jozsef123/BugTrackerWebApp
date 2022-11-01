@@ -1,4 +1,4 @@
-﻿using BugTrackerWebApp.Data;
+﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -27,23 +27,18 @@ namespace BugTrackerWebApp.Models
         [Required]
         public string Name { get; set; }
         public string Description { get; set; }
-        public string SubmitterUserName { get; set; }
-        public string AssignedDeveloperUserName { get; set; }
+        public IdentityUser Submitter { get; set; }
+        public string AssignedDeveloperId { get; set; }
+        public IdentityUser AssignedDeveloper { get; set; }
         public Priority? Priority { get; set; }
         public Type? Type { get; set; }       
         public Status? Status { get; set; }
-        public DateTime? Date_Created { get; set; }
-        public DateTime? Date_Updated { get; set; }
-
+        public DateTime CreatedWhen { get; set; }
+        public DateTime? UpdatedWhen { get; set; }
         public Project Project { get; set; }
-
         public ICollection<Comment> Comments { get; set; }
-        public ICollection<App_File> App_Files { get; set; }
-        public ICollection<Ticket_History> Ticket_Histories { get; set; }
-
-        public Ticket()
-        {
-
-        }
+        public ICollection<AppFile> AppFiles { get; set; }
+        public ICollection<TicketHistory> TicketHistory { get; set; }
+        public Ticket(){}
     }
 }

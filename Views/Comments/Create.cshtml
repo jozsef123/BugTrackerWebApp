@@ -13,17 +13,15 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="TicketId" class="control-label">Ticket Name</label>
+                <label asp-for="Ticket.Name" class="control-label">Ticket Name</label>
                 <br />
-                @*@Html.DropDownListFor(m => m.TicketId, 
-                    (SelectList)@ViewBag.Tickets, "Select Ticket"
-                )*@
-                <b>@TempData["ticketName"]</b>
-                <span asp-validation-for="TicketId" class ="text-danger"></span>
+                @Html.DropDownListFor(m => m.TicketId,
+                (SelectList)@ViewBag.Tickets,
+                "Select a Ticket")
             </div>
-            <div class="form-group">
-                <label asp-for="Message" class="control-label"></label>
-                <input asp-for="Message" class="form-control" />
+            <div class="form-group" style="min-width:900px">
+                <label asp-for="Message" class="control-label">Message</label>
+                <textarea asp-for="Message" class="form-control" style="height: 200px"></textarea>
                 <span asp-validation-for="Message" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -34,7 +32,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 </div>
 
 @section Scripts {

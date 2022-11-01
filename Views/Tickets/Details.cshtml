@@ -1,6 +1,5 @@
 ﻿@model BugTrackerWebApp.Models.Ticket
 
-
 @{
     ViewData["Title"] = "Details";
 }
@@ -9,43 +8,39 @@
 
 <div>
     <h4>Ticket</h4>
-    <a asp-controller = "Comments" asp-action="Create">Create a comment for ticket</a> | 
-    <a asp-controller = "Comments" asp-action="Index">View comments for ticket</a>
+    <a asp-controller = "Comments" asp-action="Create" class="btn btn-primary">Create a comment for ticket</a> 
+    <a asp-controller = "Comments" asp-action="Index" class="btn btn-success">View comments for ticket</a>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
             Project Name
         </dt>
         <dd class = "col-sm-10">
-            @*@Html.DisplayFor(model => model.Project.Name)*@
-            @ViewBag.projectName
+            @Html.DisplayFor(model => model.Project.Name)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Name)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Name)
-   
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Description)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
+        <div class="form-group" style="min-width:900px">
+            <textarea readonly asp-for="Description" class="form-control" style="height: 200px"></textarea>
+        </div>
         <dt class = "col-sm-2">
-            @*@Html.DisplayNameFor(model => model.SubmitterId)*@
             Submitter 
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SubmitterUserName)
+            @Html.DisplayFor(model => model.Submitter.UserName)
         </dd>
         <dt class = "col-sm-2">
-            @*@Html.DisplayNameFor(model => model.AssignedDeveloperUserName)*@
             Assigned Developer
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AssignedDeveloperUserName)
+            @Html.DisplayFor(model => model.AssignedDeveloper.UserName)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Priority)
@@ -66,33 +61,31 @@
             @Html.DisplayFor(model => model.Status)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Date_Created)
+            @Html.DisplayNameFor(model => model.CreatedWhen)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Date_Created)
+            @Html.DisplayFor(model => model.CreatedWhen)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Date_Updated)
+            @Html.DisplayNameFor(model => model.UpdatedWhen)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Date_Updated)
+            @Html.DisplayFor(model => model.UpdatedWhen)
         </dd>
     </dl>
 </div>
 <div>
+    <h3>Comments</h3>
     <table class="table">
         <thead>
             <tr>
                 <th>
-                    @*@Html.DisplayNameFor(model => model.SubmitterUserName)*@
                     Submitter
                 </th>
                 <th>
-                    @*@Html.DisplayNameFor(model => model.Comments.Message)*@
                     Message
                 </th>
                 <th>
-                   @* @Html.DisplayNameFor(model => model.Date_Created)*@
                     Date Created
                 </th>
                 <th></th>
@@ -102,13 +95,13 @@
         @foreach (var item in Model.Comments) {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.SubmitterUserName)
+                        @Html.DisplayFor(modelItem => item.Submitter.UserName)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Message)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Date_Created)
+                        @Html.DisplayFor(modelItem => item.CreatedWhen)
                     </td>
                     <td>
                         <a asp-controller = "Comments" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
@@ -121,48 +114,54 @@
     </table>
 </div>
 <div>
+    <h3>Ticket History</h3>
     <table class="table">
         <thead>
             <tr>
                 <th>
-
-                    Old UserName Value
+                    Previous Assigned Developer
                 </th>
                 <th>
-                    New UserName Value
+                    New Assigned Developer
                 </th>
                 <th>
                    Date Changed
                 </th>
                 <th>
-                    Ticket Updater UserName
+                    Updater UserName
                 </th>
             </tr>
         </thead>
         <tbody>
-        @foreach (var item in ViewBag.ticketHistory) {
-                <tr>
-                    <td>
-                        @item.OldValueUserName
-                    </td>
-                    <td>
-                        @item.NewValueUserName
-                    </td>
-                    <td>
-                        @item.Date_Changed
-                    </td>
-                    <td>
-                        @item.TicketUpdaterUserName
-                    </td>
-                </tr>
+        @foreach (var item in Model.TicketHistory) {
+            <tr>
+                <td>
+                    @if (@item.PreviousAssignedDeveloperId != null)
+                    {
+                        @item.PreviousAssignedDeveloper.UserName
+                    } 
+                </td>
+                <td>
+                    @if (@item.NewAssignedDeveloperId != null)
+                    {
+                        @item.NewAssignedDeveloper.UserName
+                    }
+                </td>
+                <td>
+                    @item.UpdatedWhen
+                </td>
+                <td>
+                    @item.Updater.UserName
+                </td>
+            </tr>
         }
        </tbody>
     </table>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to Tickets List</a> |
-    <a asp-controller = "Projects" asp-action="Details" asp-route-id="@Model.ProjectId">Back to Project details</a> |
-    <a asp-controller = "App_File" asp-action="Create">Upload file</a>  | 
-    <a asp-controller = "App_File" asp-action="Index">View files for ticket</a> 
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a> 
+    <a asp-action="Index" class="btn btn-secondary">Back to Tickets List</a> 
+    <a asp-controller = "Projects" asp-action="Details" asp-route-id="@Model.Project.Id" class="btn btn-secondary">Back to Project details</a> 
+    <a asp-controller = "AppFiles" asp-action="Create" class="btn btn-primary">Upload file</a>  
+    <a asp-controller = "AppFiles" asp-action="Index" class="btn btn-success">View files for ticket</a> 
 </div>

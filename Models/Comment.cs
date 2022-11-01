@@ -1,4 +1,4 @@
-﻿using BugTrackerWebApp.Data;
+﻿using Microsoft.AspNetCore.Identity;
 using System;
 
 namespace BugTrackerWebApp.Models
@@ -7,14 +7,11 @@ namespace BugTrackerWebApp.Models
     {
         public int Id { get; set; }
         public int TicketId { get; set; }
-        public string SubmitterUserName { get; set; }
+        public IdentityUser Submitter { get; set; }
         public string Message { get; set; }
-        public DateTime Date_Created { get; set; }
-
+        public DateTime CreatedWhen { get; set; }
+        public DateTime? UpdatedWhen { get; set; }
         public Ticket Ticket { get; set; }
-        public Comment()
-        {
-
-        }
+        public Comment(){}
     }
 }

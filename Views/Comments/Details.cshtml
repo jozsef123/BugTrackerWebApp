@@ -11,16 +11,16 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TicketId)
+            @Html.DisplayNameFor(model => model.Ticket.Id)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TicketId)
+            @Html.DisplayFor(model => model.Ticket.Id)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SubmitterUserName)
+            @Html.DisplayNameFor(model => model.Submitter.UserName)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SubmitterUserName)
+            @Html.DisplayFor(model => model.Submitter.UserName)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Message)
@@ -29,14 +29,14 @@
             @Html.DisplayFor(model => model.Message)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Date_Created)
+            @Html.DisplayNameFor(model => model.CreatedWhen)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Date_Created)
+            @Html.DisplayFor(model => model.CreatedWhen)
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a> |
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 </div>

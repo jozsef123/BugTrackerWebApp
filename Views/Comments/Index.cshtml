@@ -4,23 +4,22 @@
     ViewData["Title"] = "Index";
 }
 
-@*<h1>Index</h1>*@
-<h3>Ticket Name: @ViewBag.ticketName</h3>
+<h1>Comments</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.SubmitterUserName)
+                @Html.DisplayNameFor(model => model.Submitter.UserName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Message)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Date_Created)
+                @Html.DisplayNameFor(model => model.CreatedWhen)
             </th>
             <th>
                 <p style="color:red;">@TempData["Error"]</p>
@@ -31,18 +30,18 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.SubmitterUserName)
+                @Html.DisplayFor(modelItem => item.Submitter.UserName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Message)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Date_Created)
+                @Html.DisplayFor(modelItem => item.CreatedWhen)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a> 
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-success">Details</a> 
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
             </td>
         </tr>
 }
