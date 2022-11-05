@@ -35,10 +35,10 @@ namespace BugTrackerWebApp.Controllers
             var adminUser = _context.Users.Where(x => x.UserName == "admin@test.com").First();
             var userRoles = _context.UserRoles.ToList();
 
-            var users = (from u in _context.Users
-                        where u.UserName != "admin@test.com"
+            var users = (from u in _context.Users join r in _context.UserRoles
+                        on u.Id equals r.UserId where u.UserName != "admin@test.com" && r.RoleId != "e"
                         select u).ToList();
-
+            
             // query for users that are not admin@test.com but also are not users with role of demo
 
             var convertedUsers = users.Select(x => new UsersViewModel
