@@ -92,6 +92,17 @@ namespace BugTrackerWebApp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        public async Task<IActionResult> RemoveAllDemoUsers()
+        {
+            var users = (from u in _context.Users join r in _context.UserRoles
+                         on u.Id equals r.UserId
+                         where r.RoleId == "e"
+                         select u);
+            _context.Users.RemoveRange(users);
+            _context.SaveChanges();
+            return await Task.Run(() => RedirectToAction("Index"));
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateRole(RoleViewModel vm)
         {
