@@ -122,6 +122,9 @@ namespace BugTrackerWebApp.Controllers
             {
                 return NotFound();
             }
+            TempData["fileName"] = appFile.Name;
+            TempData["fileType"] = appFile.Type;
+            TempData["fileData"] = appFile.Data;
 
             return View(appFile);
         }
@@ -146,10 +149,18 @@ namespace BugTrackerWebApp.Controllers
                     if (memoryStream.Length < 2097152)
                     {
                         appFile.UpdatedWhen = DateTime.Now;
-                        appFile.Name = appFile.FormFile.FileName;
-                        appFile.Type = appFile.FormFile.ContentType;
-                        await appFile.FormFile.CopyToAsync(memoryStream);
-                        appFile.Data = memoryStream.ToArray();
+                        if (appFile.FormFile == null)
+                        {
+                            appFile.Name = (string)TempData["fileName"];
+                            appFile.Type = (string)TempData["fileType"];
+                            appFile.Data = (byte[])TempData["fileData"];
+                        } else
+                        {
+                            appFile.Name = appFile.FormFile.FileName;
+                            appFile.Type = appFile.FormFile.ContentType;
+                            await appFile.FormFile.CopyToAsync(memoryStream);
+                            appFile.Data = memoryStream.ToArray();
+                        }
                         _context.Update(appFile);
                         await _context.SaveChangesAsync();
                     }
