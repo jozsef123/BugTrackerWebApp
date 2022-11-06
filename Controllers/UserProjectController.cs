@@ -47,7 +47,8 @@ namespace BugTrackerWebApp.Controllers
         // GET: UserProject/Create
         public IActionResult Create()
         {
-            ViewBag.Users = new SelectList(_context.Users, "Id", "UserName");
+            var users = GetNonDemoUsers().ToList();
+            ViewBag.Users = new SelectList(users, "Id", "UserName");
             ViewBag.Projects = new SelectList(_context.Project, "Id", "Name");
             return View();
         }
@@ -90,7 +91,8 @@ namespace BugTrackerWebApp.Controllers
             {
                 return NotFound();
             }
-            ViewBag.Users = new SelectList(_context.Users, "Id", "UserName");
+            var users = GetNonDemoUsers().ToList();
+            ViewBag.Users = new SelectList(users, "Id", "UserName");
             ViewBag.Projects = new SelectList(_context.Project, "Id", "Name");
             return View(userProject);
         }

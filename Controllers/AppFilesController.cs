@@ -1,6 +1,7 @@
 ﻿using BugTrackerWebApp.Data;
 using BugTrackerWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.IO;
@@ -9,32 +10,25 @@ using System.Threading.Tasks;
 
 namespace BugTrackerWebApp.Controllers
 {
-    public class AppFilesController : Controller
+    public class AppFilesController : UsersController
     {
         private readonly ApplicationDbContext _context;
 
-        public AppFilesController(ApplicationDbContext context)
+        public AppFilesController(ApplicationDbContext context) :base(context)
         {
             _context = context;
         }
 
-        // GET: Files
+        // GET: AppFiles
         public IActionResult Index()
         {
-            int ticketId = (int)TempData["ticketId"];       // TODO: Try to avoid doing this TempData repeately
-            string ticketName = (string)TempData["ticketName"];
-            TempData["ticketName"] = ticketName;
-            TempData["ticketId"] = ticketId;
-            var appFile = from aF in _context.AppFile
-                           where aF.Ticket.Id == ticketId
-                           select aF;
-            // TODO what happens where there are no files in the app? 
-            // Do we want to show something?
-            ViewBag.ticketName = ticketName;
+            var appFile = from f in _context.AppFile
+                           where GetCurrentUserTicketsId().Contains(f.TicketId)
+                           select f;
             return View(appFile);
         }
 
-        // GET: Files/Details/5
+        // GET: AppFiles/Details/5
         public IActionResult Details(int? id)
         {
             if (id == null)
@@ -42,20 +36,14 @@ namespace BugTrackerWebApp.Controllers
                 return NotFound();
             }
 
-            var appFile = (from aF in _context.AppFile
-                           where aF.Id == id
-                           select aF).First();
+            var appFile = (from f in _context.AppFile
+                           where f.Id == id
+                           select f).Include(f => f.Ticket).Include(f => f.Submitter).First();
 
             if (appFile == null)
             {
                 return NotFound(); // TODO show an error page (also test out and see what it says)
             }
-
-            string ticketName = (string)TempData["ticketName"];         // TODO: Revise
-            TempData["ticketName"] = ticketName;
-            TempData["ticketId"] = appFile.Ticket.Id;
-
-            ViewBag.ticketName = ticketName;
             return View(appFile);
         }
 
@@ -72,18 +60,26 @@ namespace BugTrackerWebApp.Controllers
 
         }
 
-        // GET: Files/Create
+        // GET: AppFiles/Create
         public IActionResult Create()
         {
+            if (GetCurrentUserRoles().Contains("Admin"))
+            {
+                ViewBag.Tickets = new SelectList(GetAllTickets(), "Id", "Name");
+            }
+            else
+            {
+                ViewBag.Tickets = new SelectList(GetCurrentUserTickets(), "Id", "Name");
+            }
             return View();
         }
 
-        // POST: Files/Create
+        // POST: AppFiles/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Submitter,Description,CreatedWhen, Data, FormFile, Name, Type")] AppFile appFile)
+        public async Task<IActionResult> Create([Bind("Id,TicketId,Submitter,Description,CreatedWhen,UpdatedWhen,Data,FormFile,Name,Type")] AppFile appFile)
         {
             if (ModelState.IsValid)
             {
@@ -91,11 +87,7 @@ namespace BugTrackerWebApp.Controllers
                 {
                     if (memoryStream.Length < 2097152)
                     {
-                        int temp = (int)TempData["ticketId"]; // TODO
-                        // appFile.TicketId = temp;
-                        appFile.Submitter = (from u in _context.Users
-                                                               where u.UserName == User.Identity.Name
-                                                               select u).First();
+                        appFile.Submitter = GetCurrentUser();
                         appFile.CreatedWhen = DateTime.Now;
                         appFile.Name = appFile.FormFile.FileName;
                         appFile.Type = appFile.FormFile.ContentType;
@@ -114,7 +106,7 @@ namespace BugTrackerWebApp.Controllers
             return View(appFile);
         }
 
-        // GET: Files/Edit/5
+        // GET: AppFiles/Edit/5
         public IActionResult Edit(int? id)
         {
 
@@ -123,9 +115,9 @@ namespace BugTrackerWebApp.Controllers
                 return NotFound();
             }
 
-            var appFile = (from aF in _context.AppFile
-                          where aF.Id == id
-                          select aF).First();
+            var appFile = (from f in _context.AppFile
+                          where f.Id == id
+                          select f).Include(f => f.Ticket).Include(f => f.Submitter).First();
             if (appFile == null)
             {
                 return NotFound();
@@ -134,12 +126,12 @@ namespace BugTrackerWebApp.Controllers
             return View(appFile);
         }
 
-        // POST: Files/Edit/5
+        // POST: AppFiles/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Submitter,Description,CreatedWhen, Data, FormFile, Name, Type")] AppFile appFile)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,TicketId,Submitter,Description,CreatedWhen,UpdatedWhen,Data,FormFile,Name,Type")] AppFile appFile)
         {
             if (id != appFile.Id)
             {
@@ -153,11 +145,7 @@ namespace BugTrackerWebApp.Controllers
                     using var memoryStream = new MemoryStream();
                     if (memoryStream.Length < 2097152)
                     {
-                        var ticketId = (int)TempData["ticketId"]; // Revise later
-                        var ticket = (from t in _context.Ticket
-                                     where t.Id == ticketId
-                                      select t).First();
-                        appFile.Ticket = ticket; 
+                        appFile.UpdatedWhen = DateTime.Now;
                         appFile.Name = appFile.FormFile.FileName;
                         appFile.Type = appFile.FormFile.ContentType;
                         await appFile.FormFile.CopyToAsync(memoryStream);
@@ -187,7 +175,7 @@ namespace BugTrackerWebApp.Controllers
             return View(appFile);
         }
 
-        // GET: Files/Delete/5
+        // GET: AppFiles/Delete/5
         public IActionResult Delete(int? id)
         {
             if (id == null)
@@ -206,7 +194,7 @@ namespace BugTrackerWebApp.Controllers
             return View(appFile);
         }
 
-        // POST: Files/Delete/5
+        // POST: AppFiles/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

@@ -4,10 +4,10 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Ticket Name: @ViewBag.ticketName</h1>
+<h1>App Files</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -20,6 +20,9 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.CreatedWhen)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UpdatedWhen)
             </th>
         </tr>
     </thead>
@@ -35,6 +38,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedWhen)
             </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UpdatedWhen)
+                </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-success">Details</a> |

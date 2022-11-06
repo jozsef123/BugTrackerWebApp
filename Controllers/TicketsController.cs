@@ -186,14 +186,24 @@ namespace BugTrackerWebApp.Controllers
             // Source used: https://docs.microsoft.com/en-us/aspnet/core/data/ef-mvc/update-related-data?view=aspnetcore-6.0            
             string PreviousDeveloperId = GetTicketById(id).AsNoTracking().First().AssignedDeveloperId;
             string NewDeveloperId = ticket.AssignedDeveloperId;
-
+            
             if (ModelState.IsValid)
             {
                 try
                 {
                     ticket.UpdatedWhen = DateTime.Now;
                     _context.Update(ticket);
+                    var ticketHistory = new TicketHistory()
+                    {
+                        TicketId = ticket.Id,
+                        PreviousAssignedDeveloperId = PreviousDeveloperId,
+                        NewAssignedDeveloperId = NewDeveloperId,
+                        UpdatedWhen = DateTime.Now,
+                        Updater = GetCurrentUser()
+                    };
+                    _context.TicketHistory.Add(ticketHistory);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException /* ex */)
                 {
@@ -202,17 +212,6 @@ namespace BugTrackerWebApp.Controllers
                                     "Try again, and if the problem persists, " +
                                     "see your system administrator.");
                 }
-                var ticketHistory = new TicketHistory()
-                {
-                    TicketId = ticket.Id,
-                    PreviousAssignedDeveloperId = PreviousDeveloperId,
-                    NewAssignedDeveloperId = NewDeveloperId,
-                    UpdatedWhen = DateTime.Now,
-                    Updater = GetCurrentUser()
-                };
-                _context.TicketHistory.Add(ticketHistory);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
             }
             return View(ticket);
 

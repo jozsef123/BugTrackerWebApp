@@ -14,13 +14,14 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="Ticket" class="control-label"></label>
-                <input readonly asp-for="Ticket.Name" class="form-control" />
-                <span asp-validation-for="Ticket" class="text-danger"></span>
+                <label asp-for="TicketId" class="control-label">Ticket Name</label>
+                <input readonly type="hidden" asp-for="TicketId" class="form-control" />
+                <input readonly class="form-control" value="@Model.Ticket.Name" />
+                <span asp-validation-for="TicketId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Submitter" class="control-label"></label>
-                <input readonly asp-for="Submitter.UserName" class="form-control" />
+                <input readonly asp-for="Submitter" class="form-control" />
                 
             </div>
             <div class="form-group">
@@ -38,7 +39,7 @@
             </dd>
             <div class="form-group">
                 <label asp-for="FormFile">Upload new file</label><br>
-                <input asp-for="FormFile" type="file">
+                <input asp-for="FormFile" type="file" required>
                 <span asp-validation-for="FormFile" class="text-danger"></span>
             </div>
             <div class="form-group">

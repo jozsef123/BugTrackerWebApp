@@ -37,11 +37,11 @@ namespace BugTrackerWebApp.Controllers
             return roleNames;
         }
 
-        public List<Project> GetCurrentUserProjects()
+        public IQueryable<Project> GetCurrentUserProjects()
         {
             var projects = (from up in _context.UserProject 
                                 where up.User.Id == GetCurrentUser().Id
-                                select up.Project).Include(up => up.Owner).ToList();
+                                select up.Project);
             return projects;
         }
 
@@ -122,7 +122,7 @@ namespace BugTrackerWebApp.Controllers
         {
             return (from u in _context.UserProject
                     where u.Project.Id == project.Id
-                    select u.User);
+                    select u.User).Distinct();
         }
 
         public IdentityUser GetUserByUserName(string username)
@@ -182,6 +182,15 @@ namespace BugTrackerWebApp.Controllers
                           .Include(t => t.AppFiles)
                           .Include(t => t.TicketHistory);
             return tickets;
+        }
+
+        public IQueryable<IdentityUser> GetNonDemoUsers()
+        {
+            var users = (from u in _context.Users
+                         join r in _context.UserRoles on u.Id equals r.UserId
+                         where r.RoleId != "e"
+                         select u);
+            return users;
         }
     }
 }
