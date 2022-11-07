@@ -98,6 +98,10 @@ namespace BugTrackerWebApp.Controllers
                          on u.Id equals r.UserId
                          where r.RoleId == "e"
                          select u);
+            var projects = (from p in _context.Project
+                            where users.Contains(p.Owner)
+                            select p);
+            _context.Project.RemoveRange(projects);
             _context.Users.RemoveRange(users);
             _context.SaveChanges();
             return await Task.Run(() => RedirectToAction("Index"));
