@@ -28,6 +28,12 @@ namespace BugTrackerWebApp.Controllers
             return View(GetCurrentUserComments()); 
         }
 
+        public IActionResult IndexForTicket(int? id)
+        {
+            TempData["ticketName"] = GetTicketById(id).First().Name;
+            return View(GetCommentsByTicketId(id));
+        }
+
         // GET: Comments/Details/5
         public IActionResult Details(int? id)
         {
@@ -52,6 +58,13 @@ namespace BugTrackerWebApp.Controllers
             {
                 ViewBag.Tickets = new SelectList(GetCurrentUserTickets(), "Id", "Name");
             }
+            return View();
+        }
+
+        public IActionResult CreateForTicket(int? id)
+        {
+            TempData["ticketId"] = id;
+            TempData["ticketName"] = GetTicketById(id).First().Name;
             return View();
         }
 

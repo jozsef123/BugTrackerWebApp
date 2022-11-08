@@ -8,8 +8,8 @@
 
 <div>
     <h4>Ticket</h4>
-    <a asp-controller = "Comments" asp-action="Create" class="btn btn-primary">Create a comment for ticket</a> 
-    <a asp-controller = "Comments" asp-action="Index" class="btn btn-success">View comments for ticket</a>
+    <a asp-controller="Comments" asp-action="CreateForTicket" asp-route-id="@Model.Id"  class="btn btn-primary">Create a comment for ticket</a>
+    <a asp-controller="Comments" asp-action="IndexForTicket" asp-route-id="@Model.Id" class="btn btn-success">View comments for ticket</a>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
