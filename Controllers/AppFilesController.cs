@@ -28,6 +28,13 @@ namespace BugTrackerWebApp.Controllers
             return View(appFile);
         }
 
+        // Get: AppFiles/IndexForTicket/5
+        public IActionResult IndexForTicket(int? id)
+        {
+            TempData["ticketName"] = GetTicketById(id).First().Name;
+            return View(GetAppFilesByTicketId(id).Include(x => x.Ticket).Include(x => x.Submitter));
+        }
+
         // GET: AppFiles/Details/5
         public IActionResult Details(int? id)
         {

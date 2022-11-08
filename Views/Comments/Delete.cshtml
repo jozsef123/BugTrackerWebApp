@@ -12,13 +12,13 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ticket.Id)
+            Ticket Name
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ticket.Id)
+            @Html.DisplayFor(model => model.Ticket.Name)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Submitter.UserName)
+            Submitter
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Submitter.UserName)
@@ -34,6 +34,12 @@
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.CreatedWhen)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.UpdatedWhen)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.UpdatedWhen)
         </dd>
     </dl>
     

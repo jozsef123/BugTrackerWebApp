@@ -3,6 +3,7 @@ using BugTrackerWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -75,6 +76,7 @@ namespace BugTrackerWebApp.Controllers
             else if (ModelState.IsValid)
             {
                 project.OwnerId = GetCurrentUser().Id;
+                project.CreatedWhen = DateTime.Now;
                 _context.Add(project);
                 await _context.SaveChangesAsync();
                 UserProject user_Project = new()
@@ -113,7 +115,7 @@ namespace BugTrackerWebApp.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,OwnerId")] Project project)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,OwnerId,CreatedWhen")] Project project)
         {
             if (id != project.Id)
             {

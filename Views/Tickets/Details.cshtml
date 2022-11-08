@@ -8,8 +8,8 @@
 
 <div>
     <h4>Ticket</h4>
-    <a asp-controller = "Comments" asp-action="Create" class="btn btn-primary">Create a comment for ticket</a> 
-    <a asp-controller = "Comments" asp-action="Index" class="btn btn-success">View comments for ticket</a>
+    <a asp-controller="Comments" asp-action="CreateForTicket" asp-route-id="@Model.Id"  class="btn btn-primary">Create a comment for ticket</a>
+    <a asp-controller="Comments" asp-action="IndexForTicket" asp-route-id="@Model.Id" class="btn btn-success">View comments for ticket</a>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -162,6 +162,6 @@
     <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a> 
     <a asp-action="Index" class="btn btn-secondary">Back to Tickets List</a> 
     <a asp-controller = "Projects" asp-action="Details" asp-route-id="@Model.Project.Id" class="btn btn-secondary">Back to Project details</a> 
-    <a asp-controller = "AppFiles" asp-action="Create" class="btn btn-primary">Upload file</a>  
-    <a asp-controller = "AppFiles" asp-action="Index" class="btn btn-success">View files for ticket</a> 
+    <a asp-controller="AppFiles" asp-action="Create" asp-route-id="@Model.Id" class="btn btn-primary">Upload file</a>
+    <a asp-controller="AppFiles" asp-action="IndexForTicket" asp-route-id="@Model.Id" class="btn btn-success">View files for ticket</a>
 </div>

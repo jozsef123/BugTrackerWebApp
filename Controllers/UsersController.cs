@@ -171,6 +171,14 @@ namespace BugTrackerWebApp.Controllers
             return comment;
         }
 
+        public IQueryable<Comment> GetCommentsByTicketId(int? id)
+        {
+            var comments = (from c in _context.Comment
+                            where c.TicketId == id
+                            select c);
+            return comments;
+        }
+
         public IQueryable<Ticket> GetAllTickets()
         {
             var tickets = (from t in _context.Ticket
@@ -191,6 +199,14 @@ namespace BugTrackerWebApp.Controllers
                          where r.RoleId != "e"
                          select u);
             return users;
+        }
+
+        public IQueryable<AppFile> GetAppFilesByTicketId(int? id)
+        {
+            var files = (from f in _context.AppFile
+                         where f.TicketId == id
+                         select f);
+            return files;
         }
     }
 }

@@ -1,0 +1,53 @@
+﻿@model IEnumerable<BugTrackerWebApp.Models.AppFile>
+
+@{
+    ViewData["Title"] = "Comments For Ticket";
+}
+
+<h1>App Files</h1>
+<h3>Ticket: @TempData["ticketName"] </h3>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Submitter UserName
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedWhen)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UpdatedWhen)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Submitter.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedWhen)
+            </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UpdatedWhen)
+                </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-success">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

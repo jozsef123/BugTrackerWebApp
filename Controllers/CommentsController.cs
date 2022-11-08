@@ -23,9 +23,16 @@ namespace BugTrackerWebApp.Controllers
         {
             if (GetCurrentUserRoles().Contains("Admin"))
             {
-                return View(_context.Comment.ToList());
+                return View(_context.Comment.Include(x => x.Ticket).ToList());
             }
-            return View(GetCurrentUserComments()); 
+            return View(GetCurrentUserComments().Include(x => x.Ticket)); 
+        }
+
+        // Get: Comments/IndexForTicket/5
+        public IActionResult IndexForTicket(int? id)
+        {
+            TempData["ticketName"] = GetTicketById(id).First().Name;
+            return View(GetCommentsByTicketId(id));
         }
 
         // GET: Comments/Details/5
@@ -52,6 +59,13 @@ namespace BugTrackerWebApp.Controllers
             {
                 ViewBag.Tickets = new SelectList(GetCurrentUserTickets(), "Id", "Name");
             }
+            return View();
+        }
+
+        public IActionResult CreateForTicket(int? id)
+        {
+            TempData["ticketId"] = id;
+            TempData["ticketName"] = GetTicketById(id).First().Name;
             return View();
         }
 
