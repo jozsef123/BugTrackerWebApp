@@ -35,6 +35,12 @@ namespace BugTrackerWebApp.Controllers
             return View(GetCommentsByTicketId(id));
         }
 
+        public IActionResult IndexForTicket(int? id)
+        {
+            TempData["ticketName"] = GetTicketById(id).First().Name;
+            return View(GetCommentsByTicketId(id));
+        }
+
         // GET: Comments/Details/5
         public IActionResult Details(int? id)
         {
