@@ -46,6 +46,10 @@
     outline: none;
 }
 
+.text-danger {
+    color: beige !important;
+}
+
 .login .form .text::placeholder {
     color: #D3D3D3;
 }
