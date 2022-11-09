@@ -155,7 +155,7 @@ namespace BugTrackerWebApp.Controllers
             {
                 return NotFound();
             }
-            var ticket = GetTicketById(id).AsNoTracking().First();
+            var ticket = GetTicketById(id).First();
             if (ticket == null) return NotFound();
 
             if (GetCurrentUserRoles().Contains("Admin") || IsUserTicket(ticket))

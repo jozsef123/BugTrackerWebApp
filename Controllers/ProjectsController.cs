@@ -64,7 +64,7 @@ namespace BugTrackerWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,OwnerId,CreatedWhen")] Project project)
         {
-            var name = _context.Project.FirstOrDefault(x => x.Name == project.Name);
+            var name = _context.Project.AsNoTracking().FirstOrDefault(x => x.Name == project.Name);
             if (project.Name.Contains(' '))
             {
                 ViewBag.ErrorMessage = "No spaces allowed in a Project Name.";
@@ -124,7 +124,7 @@ namespace BugTrackerWebApp.Controllers
             // only existing project owner can change project owner
             var differentProjectAlreadyHasName = (from p in _context.Project
                                                   where p.Name == project.Name && p.Id != project.Id
-                                                  select p).FirstOrDefault();
+                                                  select p).AsNoTracking().FirstOrDefault();
 
             if (project.Name.Contains(' '))
             {
