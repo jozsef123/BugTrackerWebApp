@@ -13,7 +13,7 @@
     <thead>
         <tr>
             <th>
-                Submitter UserName
+                Submitter 
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Description)
@@ -42,8 +42,8 @@
                     @Html.DisplayFor(modelItem => item.UpdatedWhen)
                 </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-success">Details</a> |
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a> 
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-success">Details</a> 
                 <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
             </td>
         </tr>
