@@ -11,41 +11,47 @@
     <h4>File</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ticket.Id)
+        <dt class="col-sm-2">
+            Ticket Name
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ticket.Id)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Ticket.Name)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Submitter.UserName)
+        <dt class="col-sm-2">
+            Submitter
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Submitter.UserName)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Description)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Description)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.CreatedWhen)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.CreatedWhen)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.UpdatedWhen)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.UpdatedWhen)
+        </dd>
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Data)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Data)
+        <dd class="col-sm-10">
+            @Html.ActionLink("Download File", "DownLoadFile", new { id=Model.Id })
         </dd>
     </dl>
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <input type="submit" value="Delete" class="btn btn-danger" /> 
         <a asp-action="Index" class="btn btn-secondary">Back to List</a>
     </form>
 </div>

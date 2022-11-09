@@ -203,7 +203,7 @@ namespace BugTrackerWebApp.Controllers
 
             var appFile = (from aF in _context.AppFile
                         where aF.Id == id
-                        select aF).First();
+                        select aF).Include(f => f.Ticket).Include(f => f.Submitter).First();
             if (appFile == null)
             {
                 return NotFound();
