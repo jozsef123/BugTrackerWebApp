@@ -13,6 +13,8 @@
     <title>BugTracker Login</title>
     <link href="https://fonts.googleapis.com/css?family=Assistant:400,700" rel="stylesheet">
     <link rel="stylesheet" href="~/css/Login.css"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/v4-shims.css">
 </head>
 <body>
     <div class="centerDiv">
@@ -54,6 +56,23 @@
                         @*<button id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</button>*@
                         <p>
                             <a asp-controller="UsersAccount" asp-action="Demo" class='subLink'>Try a demo</a>
+                        </p>
+                    </div>
+                </form>
+
+                <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                    <div>
+                        <p>
+                            @foreach (var provider in Model.ExternalLogins)
+                            {
+                                @if(provider.Name == "Google")
+                                {
+                                    <button type="submit" class="btn btn-link btn-floating mx-1" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
+                                        <i class="fab fa-google fa-3x" style="color: #de5246;"></i>
+                                    </button>
+                                }
+                                
+                            }
                         </p>
                     </div>
                 </form>
