@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<BugTrackerWebApp.Models.AppFile>
 
 @{
-    ViewData["Title"] = "Comments For Ticket";
+    ViewData["Title"] = "Files For Ticket";
 }
 
 <h1>App Files</h1>
@@ -20,10 +20,10 @@
                 @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CreatedWhen)
+                Date Created
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.UpdatedWhen)
+                Date Updated
             </th>
         </tr>
     </thead>
