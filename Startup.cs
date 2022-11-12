@@ -78,8 +78,8 @@ namespace BugTrackerWebApp
 
             services.AddAuthentication().AddGoogle(googleOptions =>
             {
-                googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
-                googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+                googleOptions.ClientId = Environment.GetEnvironmentVariable("Authentication:Google:ClientId");
+                googleOptions.ClientSecret = Environment.GetEnvironmentVariable("Authentication:Google:ClientSecret");
             });
         }
         //
