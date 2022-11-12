@@ -75,7 +75,7 @@ namespace BugTrackerWebApp
                                 || context.User.IsInRole("Developer")
                                 || context.User.IsInRole("Submitter")));
         });
-
+            DotNetEnv.Env.Load();
             services.AddAuthentication().AddGoogle(googleOptions =>
             {
                 googleOptions.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENTID");
