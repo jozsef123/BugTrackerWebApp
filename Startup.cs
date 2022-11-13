@@ -78,9 +78,8 @@ namespace BugTrackerWebApp
             DotNetEnv.Env.Load();
             services.AddAuthentication().AddGoogle(googleOptions =>
             {
-                IConfigurationSection googleAuthNSection = Configuration.GetSection("Authentication:Google");
-                googleOptions.ClientId = googleAuthNSection["ClientId"];
-                googleOptions.ClientSecret = googleAuthNSection["ClientSecret"];
+                googleOptions.ClientId = Environment.GetEnvironmentVariable("GOOGLE__CLIENTID");
+                googleOptions.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE__CLIENTSECRET");
             });
         }
         //
