@@ -79,9 +79,6 @@ namespace BugTrackerWebApp
             //{
             //    googleOptions.ClientId = Environment.GetEnvironmentVariable("GOOGLE__CLIENTID");
             //    googleOptions.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE__CLIENTSECRET");
-            //    Console.WriteLine(googleOptions.ClientId);
-            //    Console.WriteLine(googleOptions.ClientSecret);
-
             //});
             Console.WriteLine(Environment.GetEnvironmentVariable("GOOGLE__CLIENTID"));
             Console.WriteLine(Environment.GetEnvironmentVariable("GOOGLE__CLIENTSECRET"));
