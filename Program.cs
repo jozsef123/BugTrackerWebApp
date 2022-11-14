@@ -71,15 +71,7 @@ namespace BugTrackerWebApp
             var app = host;
             var scope = app.Services.CreateScope();
             DataHelper.ManageDataAsync(scope.ServiceProvider).Wait();
-            var builder = WebApplication.CreateBuilder(args);
-            var services1 = builder.Services;
-            var configuration = builder.Configuration;
 
-            services1.AddAuthentication().AddGoogle(googleOptions =>
-            {
-                googleOptions.ClientId = Environment.GetEnvironmentVariable("GOOGLE__CLIENTID");
-                googleOptions.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE__CLIENTSECRET");
-            });
             host.Run();        
 
         }
