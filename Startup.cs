@@ -80,8 +80,6 @@ namespace BugTrackerWebApp
                 googleOptions.ClientId = Environment.GetEnvironmentVariable("GOOGLE__CLIENTID");
                 googleOptions.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE__CLIENTSECRET");
             });
-            //Console.WriteLine(Environment.GetEnvironmentVariable("GOOGLE__CLIENTID"));
-            //Console.WriteLine(Environment.GetEnvironmentVariable("GOOGLE__CLIENTSECRET"));
         }
         //
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
