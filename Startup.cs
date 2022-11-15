@@ -1,4 +1,6 @@
 using BugTrackerWebApp.Data;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -75,10 +77,20 @@ namespace BugTrackerWebApp
                                 || context.User.IsInRole("Developer")
                                 || context.User.IsInRole("Submitter")));
         });
-            services.AddAuthentication().AddGoogle(googleOptions =>
+            services
+            .AddAuthentication(
+            //    options =>
+            //{
+            //    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            //    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+            //}
+            )
+            .AddCookie()
+            .AddGoogle(GoogleDefaults.AuthenticationScheme, googleOptions =>
             {
                 googleOptions.ClientId = Environment.GetEnvironmentVariable("GOOGLE__CLIENTID");
                 googleOptions.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE__CLIENTSECRET");
+                googleOptions.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
             });
         }
         //
