@@ -75,11 +75,11 @@ namespace BugTrackerWebApp
                                 || context.User.IsInRole("Developer")
                                 || context.User.IsInRole("Submitter")));
         });
-            //services.AddAuthentication().AddGoogle(googleOptions =>
-            //{
-            //    googleOptions.ClientId = Environment.GetEnvironmentVariable("GOOGLE__CLIENTID");
-            //    googleOptions.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE__CLIENTSECRET");
-            //});
+            services.AddAuthentication().AddGoogle(googleOptions =>
+            {
+                googleOptions.ClientId = Environment.GetEnvironmentVariable("GOOGLE__CLIENTID");
+                googleOptions.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE__CLIENTSECRET");
+            });
             //Console.WriteLine(Environment.GetEnvironmentVariable("GOOGLE__CLIENTID"));
             //Console.WriteLine(Environment.GetEnvironmentVariable("GOOGLE__CLIENTSECRET"));
         }
