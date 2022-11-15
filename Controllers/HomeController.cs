@@ -1,15 +1,9 @@
 ﻿using BugTrackerWebApp.Models;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Task = System.Threading.Tasks.Task;
 
 namespace BugTrackerWebApp.Controllers
 {
