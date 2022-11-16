@@ -71,9 +71,7 @@ namespace BugTrackerWebApp
             var app = host;
             var scope = app.Services.CreateScope();
             DataHelper.ManageDataAsync(scope.ServiceProvider).Wait();
-
             host.Run();        
-
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args)
