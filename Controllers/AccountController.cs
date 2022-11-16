@@ -31,6 +31,7 @@ namespace BugTrackerWebApp.Controllers
         {
             string redirectUrl = Url.Action("GoogleResponse", "Account");
             var properties = signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
+            properties.AllowRefresh = true;
             return new ChallengeResult("Google", properties);
         }
 
