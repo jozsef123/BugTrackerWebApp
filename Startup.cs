@@ -81,6 +81,7 @@ namespace BugTrackerWebApp
             {
                 googleOptions.ClientId = Environment.GetEnvironmentVariable("GOOGLE__CLIENTID");
                 googleOptions.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE__CLIENTSECRET");
+                googleOptions.SignInScheme = IdentityConstants.ExternalScheme;
             });
         }
         //
