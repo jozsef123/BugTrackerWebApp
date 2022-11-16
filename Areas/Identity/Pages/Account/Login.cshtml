@@ -57,9 +57,12 @@
                         <p>
                             <a asp-controller="UsersAccount" asp-action="Demo" class='subLink'>Try a demo</a>
                         </p>
+                        <p>
+                            <a asp-controller="Account" asp-action="GoogleLogin" class="btn btn-info">Log In With Google</a>
+                        </p>
                     </div>
                 </form>
-
+                
                 <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
                     <div>
                         <p>
