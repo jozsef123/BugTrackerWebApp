@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -39,6 +40,11 @@ namespace BugTrackerWebApp
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages();
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
 
             // this block requires users to be signed in, to be able to access the app
             // https://www.youtube.com/watch?v=uET7MjhUeY4
@@ -74,13 +80,13 @@ namespace BugTrackerWebApp
                                 || context.User.IsInRole("Developer")
                                 || context.User.IsInRole("Submitter")));
         });
-        // services
-        // .AddAuthentication()
-        // .AddGoogle(googleOptions =>
-        // {
-        //     googleOptions.ClientId = Environment.GetEnvironmentVariable("GOOGLE__CLIENTID");
-        //     googleOptions.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE__CLIENTSECRET");
-        // });
+        services
+        .AddAuthentication()
+        .AddGoogle(googleOptions =>
+        {
+            googleOptions.ClientId = Environment.GetEnvironmentVariable("GOOGLE__CLIENTID");
+            googleOptions.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE__CLIENTSECRET");
+        });
         }
         //
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -89,12 +95,13 @@ namespace BugTrackerWebApp
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
+                app.UseForwardedHeaders();
             }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseForwardedHeaders();
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
