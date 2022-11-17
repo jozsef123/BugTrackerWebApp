@@ -3,14 +3,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
+using System.Net;
 
 namespace BugTrackerWebApp
 {
@@ -40,11 +39,6 @@ namespace BugTrackerWebApp
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages();
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedHeaders =
-                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-            });
 
             // this block requires users to be signed in, to be able to access the app
             // https://www.youtube.com/watch?v=uET7MjhUeY4
@@ -79,14 +73,19 @@ namespace BugTrackerWebApp
                                 || context.User.IsInRole("ProjectManager")
                                 || context.User.IsInRole("Developer")
                                 || context.User.IsInRole("Submitter")));
-        });
-        services
-        .AddAuthentication()
-        .AddGoogle(googleOptions =>
-        {
-            googleOptions.ClientId = Environment.GetEnvironmentVariable("GOOGLE__CLIENTID");
-            googleOptions.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE__CLIENTSECRET");
-        });
+            });
+            services.AddHttpsRedirection(options =>
+            {
+                options.RedirectStatusCode = (int) HttpStatusCode.TemporaryRedirect;
+                options.HttpsPort = 443;
+            });
+        // services
+        // .AddAuthentication()
+        // .AddGoogle(googleOptions =>
+        // {
+        //     googleOptions.ClientId = Environment.GetEnvironmentVariable("GOOGLE__CLIENTID");
+        //     googleOptions.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE__CLIENTSECRET");
+        // });
         }
         //
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -101,7 +100,6 @@ namespace BugTrackerWebApp
             {
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseForwardedHeaders();
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
