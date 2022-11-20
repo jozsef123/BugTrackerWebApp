@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Net;
 
 namespace BugTrackerWebApp
 {
@@ -74,11 +73,6 @@ namespace BugTrackerWebApp
                                 || context.User.IsInRole("Developer")
                                 || context.User.IsInRole("Submitter")));
             });
-            services.AddHttpsRedirection(options =>
-            {
-                options.RedirectStatusCode = (int) HttpStatusCode.TemporaryRedirect;
-                options.HttpsPort = 443;
-            });
         // services
         // .AddAuthentication()
         // .AddGoogle(googleOptions =>
@@ -94,7 +88,6 @@ namespace BugTrackerWebApp
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseForwardedHeaders();
             }
             else
             {
