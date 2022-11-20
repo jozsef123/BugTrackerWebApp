@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
 
 namespace BugTrackerWebApp
 {
@@ -73,7 +72,7 @@ namespace BugTrackerWebApp
                                 || context.User.IsInRole("ProjectManager")
                                 || context.User.IsInRole("Developer")
                                 || context.User.IsInRole("Submitter")));
-        });
+            });
         // services
         // .AddAuthentication()
         // .AddGoogle(googleOptions =>
@@ -89,7 +88,6 @@ namespace BugTrackerWebApp
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
             }
             else
             {
