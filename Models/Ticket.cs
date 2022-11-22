@@ -33,7 +33,7 @@ namespace BugTrackerWebApp.Models
         public Priority? Priority { get; set; }
         public Type? Type { get; set; }       
         public Status? Status { get; set; }
-        public DateTime CreatedWhen { get; set; }
+        public DateTime CreatedWhen { get; } = DateTime.Now;
         public DateTime? UpdatedWhen { get; set; }
         public Project Project { get; set; }
         public ICollection<Comment> Comments { get; set; }

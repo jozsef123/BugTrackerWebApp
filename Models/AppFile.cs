@@ -13,7 +13,7 @@ namespace BugTrackerWebApp.Models
         public int TicketId { get; set; }
         public IdentityUser Submitter { get; set; }
         public string Description { get; set; }
-        public DateTime CreatedWhen { get; set; }
+        public DateTime CreatedWhen { get; } = DateTime.Now;
         public byte[] Data { get; set; }
         [NotMapped]
         public IFormFile FormFile { get; set; }
