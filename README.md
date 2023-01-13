@@ -1,5 +1,11 @@
 # BugTrackerWebApp
-Issue Ticketing System built with Asp.net
+Web App where Admins, Project Managers, Developers and Submitters can work together on projects that include tickets, files and comments.
+
+# Technology Stack
+C# 10, ASP.NET, PostgreSQL, Bootstrap and MVC Design Pattern
+
+# Link to Hosted Website
+https://bugtrackerwebapp.up.railway.app/
 
 ## Database Schema
 https://drive.google.com/file/d/1HzJVe-frp4dkNy1KIIjkW19IbBFbTV7B/view?usp=sharing 
