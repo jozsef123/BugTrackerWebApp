@@ -11,7 +11,7 @@ namespace BugTrackerWebApp.Models
         public string Description { get; set; }
         public string OwnerId { get; set; }
         public IdentityUser Owner { get; set; }
-        public DateTime CreatedWhen { get; set; }
+        public DateTime CreatedWhen { get; } = DateTime.Now;
         public ICollection<Ticket> Tickets { get; set; }
         public ICollection<UserProject> UserProjects { get; set; }
         public Project(){}

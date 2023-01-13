@@ -53,29 +53,17 @@ namespace BugTrackerWebApp.Controllers
                         t.AssignedDeveloper.UserName.Contains(searchString));
             }
 
-            switch (sortOrder)
+            tickets = sortOrder switch
             {
-                case "Status":
-                    tickets = tickets.OrderBy(s => s.Status);
-                    break;
-                case "closed":
-                    tickets = tickets.OrderByDescending(s => s.Status);
-                    break;
-                case "DateCreated":
-                    tickets = tickets.OrderBy(s => s.CreatedWhen);
-                    break;
-                case "dateCreated_desc":
-                    tickets = tickets.OrderByDescending(s=>s.CreatedWhen);
-                    break;
-                case "DateUpdated":
-                    tickets = tickets.OrderBy(s => s.UpdatedWhen);
-                    break;
-                case "dateUpdated_desc":
-                    tickets = tickets.OrderByDescending(s => s.UpdatedWhen);
-                    break;
-                default:
-                    break;
-            }
+                "Status" => tickets.OrderBy(s => s.Status),
+                "closed" => tickets.OrderByDescending(s => s.Status),
+                "DateCreated" => tickets.OrderBy(s => s.CreatedWhen),
+                "dateCreated_desc" => tickets.OrderByDescending(s => s.CreatedWhen),
+                "DateUpdated" => tickets.OrderBy(s => s.UpdatedWhen),
+                "dateUpdated_desc" => tickets.OrderByDescending(s => s.UpdatedWhen),
+                _ => tickets                                
+            };
+
             int pageSize = 5;
             return View(await PaginatedList<Ticket>.CreateAsync(tickets.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
@@ -128,7 +116,6 @@ namespace BugTrackerWebApp.Controllers
             else if (ModelState.IsValid)
             {
                 ticket.Submitter = GetCurrentUser();
-                ticket.CreatedWhen = DateTime.Now;
 
                 _context.Add(ticket);
                 await _context.SaveChangesAsync();

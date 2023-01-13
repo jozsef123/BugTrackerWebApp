@@ -95,7 +95,6 @@ namespace BugTrackerWebApp.Controllers
                     if (memoryStream.Length < 2097152)
                     {
                         appFile.Submitter = GetCurrentUser();
-                        appFile.CreatedWhen = DateTime.Now;
                         appFile.Name = appFile.FormFile.FileName;
                         appFile.Type = appFile.FormFile.ContentType;
                         await appFile.FormFile.CopyToAsync(memoryStream);
