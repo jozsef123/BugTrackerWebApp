@@ -2,20 +2,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
 namespace BugTrackerWebApp.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
-
         public IActionResult Index()
         {
             return View();
@@ -24,7 +16,7 @@ namespace BugTrackerWebApp.Controllers
         [AllowAnonymous]
         public IActionResult Privacy()
         {
-            return View();
+            return View("Privacy");
         }
 
         [AllowAnonymous]
