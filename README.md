@@ -15,3 +15,6 @@ https://docs.google.com/document/d/1kEHKfGVC1ZmOFicSFEgC6zHgdmV6xQsfmqitfCnvkTI/
 
 ## Figma Wireframe
 https://www.figma.com/file/9vg1df087NXAgbuuksXZsK/Bugtracker?node-id=0%3A1
+
+## Repo for Tests
+https://github.com/jozsef123/BugTrackerWebAppTests
