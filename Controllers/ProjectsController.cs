@@ -76,6 +76,7 @@ namespace BugTrackerWebApp.Controllers
             else if (ModelState.IsValid)
             {
                 project.OwnerId = GetCurrentUser().Id;
+                project.CreatedWhen = DateTime.Now;
                 _context.Add(project);
                 await _context.SaveChangesAsync();
                 UserProject user_Project = new()
